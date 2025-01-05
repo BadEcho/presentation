@@ -1,0 +1,9 @@
+[submodule "src/Core"]
+	path = src/Core
+	url = https://github.com/BadEcho/core
+[submodule "src/Extensibility"]
+	path = src/Extensibility
+	url = https://github.com/BadEcho/extensibility
+[submodule "build"]
+	path = build
+	url = https://github.com/BadEcho/build

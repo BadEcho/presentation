@@ -5,7 +5,7 @@ The `BadEcho.Presentation` library is the [Bad Echo](https://badecho.com) user i
 
 A firm foundation for building model-view-viewmodel apps is provided by this library, and is used by Bad Echo applications such as the [Omnified](https://badecho.com/index.php/what-is-omnified/) game overlay platform [_Vision_](https://badecho.com/index.php/2022/02/14/vision/).
 
-This package exists to be used by specific Bad Echo applications, but is licensed under the GNU Affero General Public License so that others may enjoy it as well; see the accompanying [license](https://github.com/BadEcho/core/blob/master/LICENSE.md) for details.
+This package exists to be used by specific Bad Echo applications, but is licensed under the GNU Affero General Public License so that others may enjoy it as well; see the accompanying [license](https://github.com/BadEcho/presentation/blob/master/LICENSE.md) for details.
 
 ## About Bad Echo
 Bad Echo is a collection of software technologies and [various writings](https://badecho.com) by Matt Weber: a software designer, partnered [Twitch](https://twitch.tv/omni) streamer, and game developer.

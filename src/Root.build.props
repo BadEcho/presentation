@@ -1,0 +1,6 @@
+<Project>	
+	<PropertyGroup>
+		<CorePath Condition="'$(CorePath)' == ''">$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\Core\src'))</CorePath>
+	</PropertyGroup>	
+	<Import Project="..\build\Build.props"/>
+</Project>

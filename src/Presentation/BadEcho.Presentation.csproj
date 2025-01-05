@@ -4,15 +4,15 @@
     <Product>Bad Echo Presentation Framework</Product>
 	  <Description>Bad Echo user interface framework for Windows Presentation Foundation.</Description>
 	  <Title>$(Product)</Title>
-	  <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <PackageReadmeFile>..\..\README.md</PackageReadmeFile>
 	  <TargetFramework>net9.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
 	  <IsPackable>$(CoreIsPackable)</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\BadEcho.Common.csproj" />
-    <ProjectReference Include="..\Extensibility\BadEcho.Extensibility.csproj" />
+    <ProjectReference Include="$(CorePath)\Common\BadEcho.Common.csproj" />
+    <ProjectReference Include="$(ExtensibilityPath)\Extensibility\BadEcho.Extensibility.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,7 +28,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="README.md" Pack="true" PackagePath="" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="" />
   </ItemGroup>
 
 </Project>
