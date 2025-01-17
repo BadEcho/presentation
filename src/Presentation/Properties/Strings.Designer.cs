@@ -115,7 +115,7 @@ namespace BadEcho.Presentation.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to .
+        ///   Looks up a localized string similar to The BeginStoryboardAction must be attached to a FrameworkElement before execution..
         /// </summary>
         internal static string BeginStoryboardActionNeedsTarget {
             get {
@@ -318,15 +318,6 @@ namespace BadEcho.Presentation.Properties {
         internal static string PackUriRequiresAssemblyName {
             get {
                 return ResourceManager.GetString("PackUriRequiresAssemblyName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This window message handler hook has already been registered with the Presentation window wrapper..
-        /// </summary>
-        internal static string PresentationWindowWrapperDuplicateHook {
-            get {
-                return ResourceManager.GetString("PresentationWindowWrapperDuplicateHook", resourceCulture);
             }
         }
         

@@ -26,8 +26,9 @@ namespace BadEcho.Presentation.Windows;
 /// </suppressions>
 public sealed class PresentationWindowWrapper : WindowWrapper
 {
-    private readonly Dictionary<WindowHookProc, HwndSourceHook> _hookMapper = [];
     private readonly HwndSource _source;
+
+    private bool _sourceHooked;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PresentationWindowWrapper"/> class.
@@ -45,34 +46,35 @@ public sealed class PresentationWindowWrapper : WindowWrapper
     }
 
     /// <inheritdoc/>
-    protected override void OnHookAdded(WindowHookProc addedHook)
+    protected override void OnCallbackAdded(WindowProcedure addedCallback)
     {
-        base.OnHookAdded(addedHook);
+        base.OnCallbackAdded(addedCallback);
 
-        if (_hookMapper.ContainsKey(addedHook))
-            throw new ArgumentException(Strings.PresentationWindowWrapperDuplicateHook, nameof(addedHook));
-
-        _hookMapper.Add(addedHook, SourceHook);
+        if (_sourceHooked)
+            return;
 
         _source.AddHook(SourceHook);
 
-        IntPtr SourceHook(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
-        {
-            HookResult result = addedHook(hWnd, (uint)msg, wParam, lParam);
-            handled = result.Handled;
-
-            return result.LResult;
-        }
+        _sourceHooked = true;
     }
 
     /// <inheritdoc/>
-    protected override void OnHookRemoved(WindowHookProc removedHook)
+    protected override void OnDestroyingWindow()
     {
-        base.OnHookRemoved(removedHook);
+        base.OnDestroyingWindow();
 
-        if (!_hookMapper.Remove(removedHook, out HwndSourceHook? sourceHook))
+        if (!_sourceHooked)
             return;
+        
+        _source.RemoveHook(SourceHook);
+        _sourceHooked = false;
+    }
 
-        _source.RemoveHook(sourceHook);
+    private IntPtr SourceHook(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {   
+        ProcedureResult result = WindowProcedure(hWnd, (uint)msg, wParam, lParam);
+        handled = result.Handled;
+
+        return result.LResult;
     }
 }
