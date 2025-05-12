@@ -545,7 +545,11 @@ public sealed class OutlinedTextElement : FrameworkElement
     private void UpdateTextFormat()
     {
         FormattedText.MaxLineCount = TextWrapping == TextWrapping.NoWrap ? 1 : int.MaxValue;
-        FormattedText.LineHeight = LineHeight;
+        
+        // Leave the formatted text's line height unset if auto-calculation is desired.
+        if (!double.IsNaN(LineHeight))
+            FormattedText.LineHeight = LineHeight;
+
         FormattedText.TextAlignment = TextAlignment;
         FormattedText.Trimming = TextTrimming;
 
