@@ -1,34 +1,35 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>    
-    <Product>Bad Echo Presentation Framework</Product>
-	  <Description>Bad Echo user interface framework for Windows Presentation Foundation.</Description>
-	  <Title>$(Product)</Title>
-	  <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <TargetFramework>net9.0-windows</TargetFramework>
-    <UseWPF>true</UseWPF>
-	  <IsPackable>$(PresentationIsPackable)</IsPackable>
-  </PropertyGroup>
+	<PropertyGroup>
+		<Title>Bad Echo Presentation Framework</Title>
+		<AssemblyTitle>$(Title)</AssemblyTitle>
+		<Product>$(Title)</Product>
+		<Description>Bad Echo user interface framework for Windows Presentation Foundation.</Description>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<TargetFramework>net9.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<IsPackable>$(PresentationIsPackable)</IsPackable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(CorePath)\Common\BadEcho.Common.csproj" />
-    <ProjectReference Include="$(ExtensibilityPath)\Extensibility\BadEcho.Extensibility.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="$(CorePath)\Common\BadEcho.Common.csproj" />
+		<ProjectReference Include="$(ExtensibilityPath)\Extensibility\BadEcho.Extensibility.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Strings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Strings.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Strings.resx</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Strings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <None Include="..\..\README.md" Pack="true" PackagePath="" />
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Strings.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Strings.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+		<None Include="..\..\README.md" Pack="true" PackagePath="" />
+	</ItemGroup>
 
 </Project>
