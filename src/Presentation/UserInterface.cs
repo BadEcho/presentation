@@ -46,6 +46,22 @@ public static class UserInterface
     }
 
     /// <summary>
+    /// Runs the specified application in a context appropriate for hosting UI components.
+    /// </summary>
+    /// <typeparam name="TApplication">The type of <see cref="Application"/> to instantiate and run in the context.</typeparam>
+    /// <returns>The context hosting the application.</returns>
+    public static UserInterfaceContext RunApplication<TApplication>()
+        where TApplication : Application, new()
+    {
+        return new UserInterfaceContext(() =>
+        {
+            var application = new TApplication();
+
+            application.Run();
+        });
+    }
+
+    /// <summary>
     /// Runs the provided UI-related function in a context appropriate for hosting UI components.
     /// </summary>
     /// <param name="uiFunction">The function to run in a UI appropriate context.</param>
