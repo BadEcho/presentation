@@ -12,9 +12,6 @@
 // -----------------------------------------------------------------------
 
 using System.Windows;
-using System.Windows.Threading;
-using BadEcho.Presentation.Properties;
-using BadEcho.Logging;
 using ThreadExceptionEventArgs = BadEcho.Threading.ThreadExceptionEventArgs;
 
 namespace BadEcho.Presentation;
@@ -26,8 +23,6 @@ namespace BadEcho.Presentation;
 /// </summary>
 public static class UserInterface
 {
-    private const int HRESULT_DISPATCHER_SHUTDOWN = unchecked((int) 0x80131509);
-
     private static readonly Lock _ApplicationLock 
         = new();
 
@@ -49,61 +44,6 @@ public static class UserInterface
                 _Application.UnhandledException -= value;
         }
     }
-    
-    /// <summary>
-    /// Runs the provided UI-related function in a context appropriate for hosting UI components.
-    /// </summary>
-    /// <param name="uiFunction">The function to run in a UI appropriate context.</param>
-    /// <param name="isBlocking">
-    /// Value indicating whether the calling thread should be blocked until the action is complete.
-    /// </param>
-    /// <param name="runDispatcher">
-    /// Value indicating if the <see cref="Dispatcher"/> needs to be explicitly run, typically because
-    /// <paramref name="uiFunction"/> does not do so itself.
-    /// </param>
-    /// <remarks>
-    /// <para>
-    /// This function meets the concerns of many UI components by executing the function in a separate STA thread, optionally
-    /// blocking the calling thread until the UI thread terminates.
-    /// </para>
-    /// <para>
-    /// If <c>uiFunction</c> throws an exception, the incident will be relayed to the caller through the
-    /// <see cref="UnhandledException"/> event. The STA thread will then immediately terminate.
-    /// </para>
-    /// </remarks>
-    public static void RunUIFunction(Action uiFunction, bool isBlocking, bool runDispatcher)
-    {
-        var staThread = new Thread(() => UIFunctionRunner(uiFunction, runDispatcher));
-
-        staThread.SetApartmentState(ApartmentState.STA);
-        staThread.Start();
-
-        if (isBlocking)
-            staThread.Join();
-
-        static void UIFunctionRunner(Action uiFunction, bool runDispatcher)
-        {
-            try
-            {
-                uiFunction();
-
-                if (runDispatcher)
-                    Dispatcher.Run();
-            }
-            catch (InvalidOperationException invalidEx)
-            {
-                if (invalidEx.HResult != HRESULT_DISPATCHER_SHUTDOWN)
-                    throw;
-                    
-                Logger.Debug(Strings.BadEchoDispatcherManuallyShutdown);
-            }
-            catch (EngineException engineEx)
-            {
-                if (!engineEx.IsProcessed)
-                    Logger.Critical(Strings.BadEchoDispatcherError, engineEx.InnerException ?? engineEx);
-            }
-        }
-    }
 
     /// <summary>
     /// Runs the provided UI-related function in a context appropriate for hosting UI components.
@@ -114,13 +54,33 @@ public static class UserInterface
     /// This function meets the concerns of many UI components by executing the function in a separate STA thread without
     /// blocking the calling thread.
     /// </para>
-    /// <para>
-    /// If <c>uiFunction</c> throws an exception, the incident will be relayed to the caller through the
-    /// <see cref="UnhandledException"/> event. The STA thread will then immediately terminate.
-    /// </para>
     /// </remarks>
     public static void RunUIFunction(Action uiFunction)
-        => RunUIFunction(uiFunction, false, true);
+        => RunUIFunction(uiFunction, false);
+
+    /// <summary>
+    /// Runs the provided UI-related function in a context appropriate for hosting UI components.
+    /// </summary>
+    /// <param name="uiFunction">The function to run in a UI appropriate context.</param>
+    /// <param name="isBlocking">
+    /// Value indicating whether the calling thread should be blocked until the action is complete.
+    /// </param>
+    /// <remarks>
+    /// <para>
+    /// This function meets the concerns of many UI components by executing the function in a separate STA thread, optionally
+    /// blocking the calling thread until the UI thread terminates.
+    /// </para>
+    /// </remarks>
+    public static void RunUIFunction(Action uiFunction, bool isBlocking)
+    {
+        using (var context = new UserInterfaceContext(uiFunction))
+        {
+            context.Start();
+
+            if (isBlocking)
+                context.Join();
+        }
+    }
 
     /// <summary>
     /// Ensures that an environment suitable for a Bad Echo Presentation framework application has been built by making sure that
@@ -129,7 +89,8 @@ public static class UserInterface
     /// <remarks>
     /// <para>
     /// If the current application context lacks a live <see cref="Application"/> instance, one will be made. This current instance
-    /// is then further encapsulated and managed by the <see cref="App"/>checked for the presence of a footprint left by Bad Echo Presentation framework upon building up a suitable environment.
+    /// is then further encapsulated and managed by the <see cref="App"/>checked for the presence of a footprint left by Bad Echo
+    /// Presentation framework upon building up a suitable environment.
     /// If this footprint is not there, then all Bad Echo Presentation framework and plugin-based resources are loaded into the current
     /// application, with a number of additional configuration steps following.
     /// </para>

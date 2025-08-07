@@ -46,7 +46,6 @@ public class PresentationWindowWrapperTests
 
                 Dispatcher.CurrentDispatcher.InvokeShutdown();
             },
-            true,
             true);
 
         ProcedureResult Callback(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)

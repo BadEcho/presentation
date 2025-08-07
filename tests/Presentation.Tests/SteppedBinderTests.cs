@@ -84,8 +84,7 @@ public class SteppedBinderTests
         {
             UserInterface.RunUIFunction(
                 () => elapsed = UpdateSource(initialTargetValue.ToString(), newSourceValue, steppingDuration),
-                true,
-                false);
+                true);
         }
     }
 
@@ -95,7 +94,7 @@ public class SteppedBinderTests
         TimeSpan steppingDuration = TimeSpan.FromSeconds(1);
         TimeSpan elapsed = default;
 
-        UserInterface.RunUIFunction(() => elapsed = UpdateSource(string.Empty, 10000, steppingDuration), true, false);
+        UserInterface.RunUIFunction(() => elapsed = UpdateSource(string.Empty, 10000, steppingDuration), true);
 
         Assert.True(elapsed < steppingDuration,
                     $"Actual duration of {elapsed} greater than expected duration of {steppingDuration} when no stepping should have occurred.");
@@ -107,7 +106,7 @@ public class SteppedBinderTests
         TimeSpan steppingDuration = TimeSpan.FromSeconds(1);
         TimeSpan elapsed = default;
 
-        UserInterface.RunUIFunction(() => elapsed = UpdateSource("10000", 10000, steppingDuration), true, false);
+        UserInterface.RunUIFunction(() => elapsed = UpdateSource("10000", 10000, steppingDuration), true);
 
         Assert.True(elapsed < steppingDuration,
                     $"Actual duration of {elapsed} greater than expected duration of {steppingDuration} when no stepping should have occurred.");
@@ -119,7 +118,7 @@ public class SteppedBinderTests
         TimeSpan steppingDuration = TimeSpan.Zero;
         TimeSpan elapsed = default;
 
-        UserInterface.RunUIFunction(() => elapsed = UpdateSource("10", 15, steppingDuration), true, false);
+        UserInterface.RunUIFunction(() => elapsed = UpdateSource("10", 15, steppingDuration), true);
 
         Assert.True(
             Math.Abs(elapsed.Subtract(steppingDuration).TotalMilliseconds) < DRIFT_TOLERANCE,
@@ -171,8 +170,7 @@ public class SteppedBinderTests
                                                          initialSourceValue.ToString(),
                                                          newTargetValue.ToString(),
                                                          steppingDuration),
-                                        true,
-                                        false);
+                                        true);
         }
     }
 
@@ -182,7 +180,7 @@ public class SteppedBinderTests
         TimeSpan steppingDuration = TimeSpan.FromSeconds(1);
         TimeSpan elapsed = default;
 
-        UserInterface.RunUIFunction(() => elapsed = UpdateTarget(10, string.Empty, "1000", steppingDuration), true, false);
+        UserInterface.RunUIFunction(() => elapsed = UpdateTarget(10, string.Empty, "1000", steppingDuration), true);
 
         Assert.True(
             Math.Abs(elapsed.Subtract(steppingDuration).TotalMilliseconds) < DRIFT_TOLERANCE,
@@ -195,7 +193,7 @@ public class SteppedBinderTests
         TimeSpan steppingDuration = TimeSpan.FromSeconds(1);
         TimeSpan elapsed = default;
 
-        UserInterface.RunUIFunction(() => elapsed = UpdateTarget(10, string.Empty, "10", steppingDuration), true, false);
+        UserInterface.RunUIFunction(() => elapsed = UpdateTarget(10, string.Empty, "10", steppingDuration), true);
 
         Assert.True(elapsed < steppingDuration,
                     $"Actual duration of {elapsed} greater than expected duration of {steppingDuration} when no stepping should have occurred.");
@@ -207,7 +205,7 @@ public class SteppedBinderTests
         TimeSpan steppingDuration = TimeSpan.Zero;
         TimeSpan elapsed = default;
 
-        UserInterface.RunUIFunction(() => elapsed = UpdateTarget(10, "10", "15", steppingDuration), true, false);
+        UserInterface.RunUIFunction(() => elapsed = UpdateTarget(10, "10", "15", steppingDuration), true);
 
         Assert.True(    // Drift tolerance needs to be widened for zero-duration tests to account for WPF binding system spin-up time.
             Math.Abs(elapsed.Subtract(steppingDuration).TotalMilliseconds) < DRIFT_TOLERANCE * 2,
@@ -223,8 +221,7 @@ public class SteppedBinderTests
                 Assert.Throws<ArgumentException>(() => InitializeBinder(TimeSpan.FromSeconds(-2.0)));
                 Dispatcher.CurrentDispatcher.InvokeShutdown();
             },
-            true,
-            false);
+            true);
     }
 
     private SteppedBinder InitializeBinder(TimeSpan steppingDuration)
