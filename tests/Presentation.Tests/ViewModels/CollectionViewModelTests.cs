@@ -194,7 +194,7 @@ public class CollectionViewModelTests
         
     private sealed class FakeCollectionViewModel : CollectionViewModel<ModelStub, ViewModelStub>
     {
-        public FakeCollectionViewModel() : base(new CollectionViewModelOptions { AsyncBatchBindings = false })
+        public FakeCollectionViewModel() : base(new CollectionViewModelOptions { OffloadBatchBindings = false })
         { }
 
         public override ViewModelStub CreateItem(ModelStub model)

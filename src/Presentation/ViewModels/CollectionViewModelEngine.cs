@@ -11,13 +11,13 @@
 // </copyright>
 // -----------------------------------------------------------------------  
 
-using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Windows.Threading;
-using BadEcho.Presentation.Properties;
 using BadEcho.Collections;
 using BadEcho.Extensions;
 using BadEcho.Logging;
+using BadEcho.Presentation.Properties;
+using System.Collections.Concurrent;
+using System.ComponentModel;
+using System.Windows.Threading;
 
 namespace BadEcho.Presentation.ViewModels;
 
@@ -186,25 +186,31 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
     }
 
     /// <summary>
-    /// Aids in the binding of the provided sequence of data to the <see cref="ICollectionViewModel{TModel, TChildViewModel}"/>
-    /// view model powered by this engine, and adds the resulting children <typeparamref name="TChildViewModel"/>
-    /// objects to the child view model collection.
+    /// Binds the provided sequence of data to the <see cref="ICollectionViewModel{TModel, TChildViewModel}"/> view model powered by this engine, adding the
+    /// resulting children objects to the child view model collection.
     /// </summary>
-    /// <param name="models">The sequence of data to aid in binding to the view model being powered by this engine.</param>
+    /// <param name="models">The sequence of data to bind to the view model being powered by this engine.</param>
     public void Bind(IEnumerable<TModel> models)
     {
         Require.NotNull(models, nameof(models));
 
+        _ = BindRunner(models.ToList());
+    }
+
+    /// <summary>
+    /// Asynchronously binds the provided sequence of data to the <see cref="ICollectionViewModel{TModel, TChildViewModel}"/> view model powered by this engine,
+    /// adding the resulting children objects to the child view model collection.
+    /// </summary>
+    /// <param name="models">The sequence of data to bind to the view model being powered by this engine.</param>
+    /// <returns>The task object representing the asynchronous operation.</returns>
+    public async Task BindAsync(IEnumerable<TModel> models)
+    {
+        Require.NotNull(models, nameof(models));
+        
         if (_options.OffloadBatchBindings)
-        {
-            Task.Run(() => BindRunner(models.ToList()))
-                .ContinueWith(ProcessFailedBinding,
-                              CancellationToken.None,
-                              TaskContinuationOptions.OnlyOnFaulted,
-                              TaskScheduler.Default);
-        }
+            await Task.Run(() => BindRunner(models.ToList())).ConfigureAwait(false);
         else
-            BindRunner(models.ToList());
+            await BindRunner(models.ToList()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -350,12 +356,12 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
         viewModel.Disconnect();
     }
 
-    private void BindRunner(IReadOnlyCollection<TModel> models)
+    private async Task BindRunner(IReadOnlyCollection<TModel> models)
     {
         List<TModel> newChildrenModels;
         List<TModel> existingChildrenModels;
         List<TModel> missingChildrenModels;
-
+        
         lock (_processedModelsLock)
         {
             newChildrenModels = models.Except(_processedModels).ToList();
@@ -368,8 +374,8 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
         if (newChildrenModels.Count == 0 && existingChildrenModels.Count == 0)
             return;
 
-        TChildViewModel[] createdChildren = BindNewChildren(newChildrenModels);
-        BindExistingChildren(existingChildrenModels);
+        TChildViewModel[] createdChildren = await BindNewChildren(newChildrenModels).ConfigureAwait(false);
+        await BindExistingChildren(existingChildrenModels).ConfigureAwait(false);
 
         if (!DelayBindings && createdChildren.Length > 0)
         {   // Batch insertions may be affected by capacity enforcement, so we make sure the two operations are synchronized.
@@ -393,14 +399,19 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
         }
     }
 
-    private TChildViewModel[] BindNewChildren(List<TModel> models)
+    private async Task<TChildViewModel[]> BindNewChildren(List<TModel> models)
     {
         TChildViewModel[] createdChildren = new TChildViewModel[models.Count];
         if (models.Count >= _options.BindingParallelizationThreshold)
         {
-            Parallel.For(0,
-                         createdChildren.Length,
-                         i => createdChildren[i] = _viewModel.CreateItem(models[i]));
+            await Parallel.ForAsync(0, 
+                                    createdChildren.Length,
+                                    (i, _) =>
+                                    {
+                                        createdChildren[i] = _viewModel.CreateItem(models[i]);
+                                        return ValueTask.CompletedTask;
+                                    })
+                          .ConfigureAwait(false);
         }
         else
         {
@@ -411,13 +422,18 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
         return createdChildren;
     }
 
-    private void BindExistingChildren(List<TModel> models)
+    private async Task BindExistingChildren(List<TModel> models)
     {
         if (models.Count >= _options.BindingParallelizationThreshold)
         {
-            Parallel.For(0,
-                         models.Count,
-                         i => _viewModel.UpdateItem(models[i]));
+            await Parallel.ForAsync(0,
+                                    models.Count,
+                                    (i, _) =>
+                                    {
+                                        _viewModel.UpdateItem(models[i]);
+                                        return ValueTask.CompletedTask;
+                                    })
+                          .ConfigureAwait(false);
         }
         else
         {
@@ -461,17 +477,6 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
 
             _changeStrategy.TrimExcess(_viewModel, exceededCount);
         }
-    }
-
-    private void ProcessFailedBinding(Task failedBinding)
-    {
-        Exception? rootException = null;
-
-        if (failedBinding.Exception != null)
-            rootException = failedBinding.Exception.FindInnermostException();
-
-        Dispatcher.BeginInvoke(() => throw new EngineException(Strings.BadEchoDispatcherError, rootException),
-                               DispatcherPriority.Send);
     }
 
     private void HandleItemsChanged(object? sender, CollectionPropertyChangedEventArgs e)

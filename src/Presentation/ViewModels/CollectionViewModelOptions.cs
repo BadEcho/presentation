@@ -26,8 +26,7 @@ namespace BadEcho.Presentation.ViewModels;
 public sealed class CollectionViewModelOptions
 {
     /// <summary>
-    /// Gets or sets a value indicating if batch processes in which numerous model data are being bound should be offloaded
-    /// to a background thread.
+    /// Gets or sets a value indicating if batch model data binding processes should be offloaded to a background thread.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -35,6 +34,9 @@ public sealed class CollectionViewModelOptions
     /// operations need be synchronous for a particular reason, these operations can be made asynchronous by enabling this option,
     /// helping to alleviate any burden that would be placed on the UI thread by offloading the batch binding operation to a background
     /// thread.
+    /// </para>
+    /// <para>
+    /// Offloading only occurs for asynchronous binding operations to avoid any possibility of unobserved task exceptions being raised.
     /// </para>
     /// </remarks>
     public bool OffloadBatchBindings
@@ -75,7 +77,7 @@ public sealed class CollectionViewModelOptions
     /// </para>
     /// </remarks>
     public int BindingParallelizationThreshold
-    { get; set; } = 1000;
+    { get; set; } = 2;
 
     /// <summary>
     /// Gets or sets the maximum number of items the child view model collection can hold at any given time.

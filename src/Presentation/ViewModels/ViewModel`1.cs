@@ -61,27 +61,36 @@ public abstract class ViewModel<T> : ViewModel, IViewModel<T>
 
         ActiveModel = model;
     }
-
+    
     /// <inheritdoc/>
     public void Bind(IEnumerable<T> models)
     {
         Require.NotNull(models, nameof(models));
 
-        if (OnBatchBinding(models))
-        {   // If a derived class has provided specialized batch binding logic, then we'll want to record the models as being bound,
-            // as this cannot be done by the derived class.
-            foreach (T model in models)
-            {
-                if (!_boundData.Contains(model))
-                    _boundData.Add(model);
-            }
-
-            return;
-        }
+        models = models.ToList();
+        
+        OnBatchBinding(models);
 
         foreach (T model in models)
         {
-            Bind(model);
+            if (!_boundData.Contains(model))
+                _boundData.Add(model);
+        }
+    }
+
+    /// <inheritdoc/>
+    public async Task BindAsync(IEnumerable<T> models)
+    {
+        Require.NotNull(models, nameof(models));
+
+        models = models.ToList();
+
+        await OnBatchBindingAsync(models).ConfigureAwait(false);
+
+        foreach (T model in models)
+        {
+            if (!_boundData.Contains(model))
+                _boundData.Add(model);
         }
     }
 
@@ -108,20 +117,13 @@ public abstract class ViewModel<T> : ViewModel, IViewModel<T>
     {
         Require.NotNull(models, nameof(models));
 
-        if (OnBatchUnbound(models))
-        {
-            foreach (T model in models)
-            {   // If a derived class has provided specialized batch unbinding logic, then we'll want to record the models as being unbound,
-                // as this cannot be done by the derived class.
-                _boundData.Remove(model);
-            }
+        models = models.ToList();
 
-            return;
-        }
+        OnBatchUnbound(models);
 
         foreach (T model in models)
         {
-            Unbind(model);
+            _boundData.Remove(model);
         }
     }
 
@@ -141,30 +143,43 @@ public abstract class ViewModel<T> : ViewModel, IViewModel<T>
     /// to be fully represented in a view can be performed.
     /// </summary>
     /// <param name="models">The sequence of new data being bound to the view model.</param>
-    /// <returns>Value indicating if <c>models</c> has been bound to the view model.</returns>
-    /// <remarks>
-    /// Derived classes can override this method to perform specialized batch binding work in place of the normal
-    /// binding logic. Returning true from this method will prevent the normal binding logic from occurring; returning
-    /// false indicates to the caller that its normal binding logic should happen. Further derived classes are expected
-    /// to participate in this behavior.
-    /// </remarks>
-    protected virtual bool OnBatchBinding([NoEnumeration]IEnumerable<T> models)
-        => false;
+    protected virtual void OnBatchBinding(IEnumerable<T> models)
+    {
+        Require.NotNull(models, nameof(models));
+
+        foreach (T model in models)
+        {
+            Bind(model);
+        }
+    }
+
+    /// <summary>
+    /// Called when a sequence of new data is being bound asynchronously to the view model so that any work required for the data
+    /// to be fully represented in a view can be performed.
+    /// </summary>
+    /// <param name="models">The sequence of new data being bound to the view model.</param>
+    /// <returns>The task object representing the asynchronous operation.</returns>
+    protected virtual Task OnBatchBindingAsync(IEnumerable<T> models)
+    {
+        OnBatchBinding(models);
+
+        return Task.CompletedTask;
+    }
 
     /// <summary>
     /// Called when a sequence of data is being unbound from the view model so that any work required for the data
     /// to no longer be represented in a view can be performed.
     /// </summary>
     /// <param name="models">The sequence of data unbound from the view model.</param>
-    /// <returns>Value indicating if <c>models</c> has been unbound from the view model.</returns>
-    /// <remarks>
-    /// Like <see cref="OnBatchBinding"/>, derived classes can override this method to perform specialized batch
-    /// unbinding work in place of normal binding logic. Returning true from this method will prevent the normal unbinding
-    /// logic from occurring; returning false indicates to the caller that its normal unbinding logic should happen. Further
-    /// derived classes are expected to participate in this behavior.
-    /// </remarks>
-    protected virtual bool OnBatchUnbound([NoEnumeration]IEnumerable<T> models)
-        => false;
+    protected virtual void OnBatchUnbound(IEnumerable<T> models)
+    {
+        Require.NotNull(models, nameof(models));
+
+        foreach (T model in models)
+        {
+            Unbind(model);
+        }
+    }
 
     /// <summary>
     /// Called when new data is being bound to the view model so that any work required for the data to be

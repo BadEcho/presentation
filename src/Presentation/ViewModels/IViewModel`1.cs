@@ -40,6 +40,13 @@ public interface IViewModel<T> : IViewModel, IModelProvider<T>
     void Bind(IEnumerable<T> models);
 
     /// <summary>
+    /// Binds the provided sequence of data to the view model asynchronously, allowing for them to be represented in a view.
+    /// </summary>
+    /// <param name="models">The sequence of data to bind to this view model.</param>
+    /// <returns>The task object representing the asynchronous operation.</returns>
+    Task BindAsync(IEnumerable<T> models);
+
+    /// <summary>
     /// Unbinds data from this view model, causing it to no longer be represented in a view.
     /// </summary>
     /// <param name="model">

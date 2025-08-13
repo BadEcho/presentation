@@ -92,25 +92,21 @@ public abstract class CollectionViewModel<TModel, TChildViewModel> : ViewModel<T
         => _engine.Bind(model);
 
     /// <inheritdoc/>
-    protected override bool OnBatchBinding(IEnumerable<TModel> models)
-    {   
-        _engine.Bind(models);
+    protected override void OnBatchBinding(IEnumerable<TModel> models) 
+        => _engine.Bind(models);
 
-        return true;
-    }
+    /// <inheritdoc/>
+    protected override async Task OnBatchBindingAsync(IEnumerable<TModel> models)
+        => await _engine.BindAsync(models).ConfigureAwait(false);
 
     /// <inheritdoc/>
     protected override void OnUnbound(TModel model)
         => _engine.Unbind(model);
 
     /// <inheritdoc/>
-    protected override bool OnBatchUnbound(IEnumerable<TModel> models)
-    {
-        _engine.Unbind(models);
+    protected override void OnBatchUnbound(IEnumerable<TModel> models) 
+        => _engine.Unbind(models);
 
-        return true;
-    }
-        
     /// <summary>
     /// Called when there is a change to either the collection's composition or a property value of one of this view model's children.
     /// </summary>
