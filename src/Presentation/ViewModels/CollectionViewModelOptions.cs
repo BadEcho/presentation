@@ -37,7 +37,7 @@ public sealed class CollectionViewModelOptions
     /// thread.
     /// </para>
     /// </remarks>
-    public bool AsyncBatchBindings
+    public bool OffloadBatchBindings
     { get; set; } = true;
 
     /// <summary>

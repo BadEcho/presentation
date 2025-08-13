@@ -195,7 +195,7 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
     {
         Require.NotNull(models, nameof(models));
 
-        if (_options.AsyncBatchBindings)
+        if (_options.OffloadBatchBindings)
         {
             Task.Run(() => BindRunner(models.ToList()))
                 .ContinueWith(ProcessFailedBinding,
