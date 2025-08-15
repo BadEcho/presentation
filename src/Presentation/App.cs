@@ -263,11 +263,11 @@ internal sealed class App
         else
         {
             if (!PluginHost.IsSupported<IConfigurationProvider>())
-            return;
+                return;
 
             configurationProvider = PluginHost.LoadRequirement<IConfigurationProvider>();
         }
-
+        
         configurationProvider.ConfigurationChanged += HandleConfigurationChanged;
 
         ApplyConfiguration(configurationProvider);
@@ -298,7 +298,7 @@ internal sealed class App
                                           isProcessed);
             }
 
-            throw new EngineException(Strings.BadEchoDispatcherError, e.Exception, isProcessed);
+            throw new EngineException(Strings.ContextDispatcherError, e.Exception, isProcessed);
         }
 
         e.Handled = true;

@@ -20,40 +20,55 @@ namespace BadEcho.Presentation;
 /// <summary>
 /// Provides a context for hosting UI components.
 /// </summary>
-public sealed class UserInterfaceContext : IDisposable
+public sealed class UserInterfaceContext
 {
     private const int HRESULT_DISPATCHER_SHUTDOWN = unchecked((int)0x80131509);
 
-    private readonly ManualResetEventSlim _start = new();
     private readonly Action _uiFunction;
     private readonly Thread _uiThread;
 
-    private bool _disposed;
+    private Dispatcher? _dispatcher;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="UserInterfaceContext"/> class.
     /// </summary>
-    /// <param name="uiFunction">The function to run in a UI appropriate context.</param>
+    /// <param name="uiFunction">The function to run in a UI-appropriate context.</param>
     public UserInterfaceContext(Action uiFunction)
     {
         Require.NotNull(uiFunction, nameof(uiFunction));
 
         _uiFunction = uiFunction;
-
+        
         _uiThread = new Thread(UIFunctionRunner)
                     {
                         IsBackground = true
                     };
-
+    
         _uiThread.SetApartmentState(ApartmentState.STA);
-        _uiThread.Start();
     }
+
+    /// <summary>
+    /// Occurs when this context's UI-related functionality has finished executing.
+    /// </summary>
+    public event EventHandler<EventArgs>? Completed;
+
+    /// <summary>
+    /// Gets a value indicating if this context's UI-related functionality is executing.
+    /// </summary>
+    public bool IsExecuting
+    { get; private set; }
+
+    /// <summary>
+    /// Gets the <see cref="System.Windows.Threading.Dispatcher"/> instance running within this context.
+    /// </summary>
+    public Dispatcher Dispatcher
+        => _dispatcher ?? throw new InvalidOperationException(Strings.ContextHasNoDispatcher);
 
     /// <summary>
     /// Starts the execution of UI-related functionality.
     /// </summary>
     public void Start()
-        => _start.Set();
+        => _uiThread.Start();
 
     /// <summary>
     /// Blocks the calling thread until the UI thread represented by this context exits.
@@ -61,40 +76,34 @@ public sealed class UserInterfaceContext : IDisposable
     public void Join()
         => _uiThread.Join();
 
-    /// <inheritdoc/>
-    public void Dispose()
-    {
-        if (_disposed)
-            return;
-
-        _start.Dispose();
-
-        _disposed = true;
-    }
-
     private void UIFunctionRunner()
     {
         try
         {
-            var context = new DispatcherSynchronizationContext(Dispatcher.CurrentDispatcher);
-
+            _dispatcher = Dispatcher.CurrentDispatcher;
+            
+            var context = new DispatcherSynchronizationContext(_dispatcher);
             SynchronizationContext.SetSynchronizationContext(context);
-
-            _start.Wait();
+            
+            IsExecuting = true;
 
             _uiFunction();
+
+            IsExecuting = false;
+
+            Completed?.Invoke(this, EventArgs.Empty);
         }
         catch (InvalidOperationException invalidEx)
         {
             if (invalidEx.HResult != HRESULT_DISPATCHER_SHUTDOWN)
                 throw;
 
-            Logger.Debug(Strings.BadEchoDispatcherManuallyShutdown);
+            Logger.Debug(Strings.ContextDispatcherManuallyShutdown);
         }
         catch (EngineException engineEx)
         {
             if (!engineEx.IsProcessed)
-                Logger.Critical(Strings.BadEchoDispatcherError, engineEx.InnerException ?? engineEx);
+                Logger.Critical(Strings.ContextDispatcherError, engineEx.InnerException ?? engineEx);
         }
     }
 }

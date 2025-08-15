@@ -104,11 +104,11 @@
   <data name="ResourceUriNotResourceDictionary" xml:space="preserve">
     <value>The imported resource URI '{0}' is not a ResourceDictionary.</value>
   </data>
-  <data name="BadEchoDispatcherError" xml:space="preserve">
-    <value>The Bad Echo Presentation framework dispatcher must be shut down due to an unhandled error caused by one of its components.</value>
+  <data name="ContextDispatcherError" xml:space="preserve">
+    <value>The context's dispatcher must be shut down due to an unhandled error caused by one of its components.</value>
   </data>
-  <data name="BadEchoDispatcherManuallyShutdown" xml:space="preserve">
-    <value>The Bad Echo Presentation framework dispatcher has been manually shutdown.</value>
+  <data name="ContextDispatcherManuallyShutdown" xml:space="preserve">
+    <value>The context's dispatcher has been manually shutdown.</value>
   </data>
   <data name="CannotAddNonBindingToMultiBinding" xml:space="preserve">
     <value>Cannot add non-binding related data to multi-binding collection.</value>
@@ -196,5 +196,8 @@
 	</data>
 	<data name="BeginStoryboardActionNeedsTarget" xml:space="preserve">
 		<value>The BeginStoryboardAction must be attached to a FrameworkElement before execution.</value>
+	</data>
+	<data name="ContextHasNoDispatcher" xml:space="preserve">
+		<value>No dispatcher for the context has been initialized because the context has not yet been run.</value>
 	</data>
 </root>
