@@ -220,7 +220,7 @@ internal sealed class App
             MatrixTransform matrixTransformation when matrixTransformation.Value == Matrix.Identity => scaleTransform,
             // If the LayoutTransform is a group, we simply add our new scale transform to it.
             TransformGroup transformGroup => AddToExistingGroup(transformGroup),
-            // Otherwise, We will preserve the current transform in a newly created group along with the scale transform we're constructing.
+            // Otherwise, we will preserve the current transform in a newly created group along with the scale transform we're constructing.
             _ => new TransformGroup
                  {
                      Children = { content.LayoutTransform, scaleTransform }
@@ -255,11 +255,18 @@ internal sealed class App
 
     private void HandleStartup(object sender, StartupEventArgs e)
     {
-        if (!PluginHost.IsSupportedByProcess<IConfigurationProvider>())
+        IConfigurationProvider? configurationProvider;
+
+        // Local process gets priority for providing the configuration.
+        if (PluginHost.IsSupportedByProcess<IConfigurationProvider>())
+            configurationProvider = PluginHost.LoadFromProcess<IConfigurationProvider>();
+        else
+        {
+            if (!PluginHost.IsSupported<IConfigurationProvider>())
             return;
 
-        IConfigurationProvider configurationProvider
-            = PluginHost.LoadFromProcess<IConfigurationProvider>();
+            configurationProvider = PluginHost.LoadRequirement<IConfigurationProvider>();
+        }
 
         configurationProvider.ConfigurationChanged += HandleConfigurationChanged;
 
