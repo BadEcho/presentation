@@ -19,12 +19,12 @@ namespace BadEcho.Presentation.Windows;
 /// Defines an assembler of a window's data context.
 /// </summary>
 /// <typeparam name="T">The type of data context used by the window.</typeparam>
-public interface IContextAssembler<out T>
+public interface IContextAssembler<T>
 {
     /// <summary>
     /// Assembles a new data context for a window.
     /// </summary>
     /// <param name="dispatcher">The dispatcher which the window is running on.</param>
-    /// <returns>The assembled data context.</returns>
-    T Assemble(Dispatcher dispatcher);
+    /// <returns>The task object representing the asynchronous operation and containing the assembled data context.</returns>
+    Task<T> Assemble(Dispatcher dispatcher);
 }

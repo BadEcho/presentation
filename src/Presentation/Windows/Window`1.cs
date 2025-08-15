@@ -87,8 +87,8 @@ public class Window<T> : Window, IComponentConnector
         VerifyAccess();
         Require.NotNull(contextAssembler, nameof(contextAssembler));
 
-        T dataContext = await Task.Run(() => contextAssembler.Assemble(Dispatcher))
-                                  .ConfigureAwait(true);
+        T dataContext = await contextAssembler.Assemble(Dispatcher)
+                                              .ConfigureAwait(true);
         DataContext = dataContext;
     }
         

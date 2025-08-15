@@ -49,10 +49,7 @@ internal sealed class ApplicationHostedService : IHostedService
         if (!_context.IsExecuting)
             return;
 
-        await _context.Dispatcher.InvokeAsync(() =>
-        {
-            Application.Current?.Shutdown();
-        });
+        await _context.Dispatcher.InvokeAsync(() => Application.Current?.Shutdown());
     }
 
     private void HandleContextCompleted(object? sender, EventArgs e)
