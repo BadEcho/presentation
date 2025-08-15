@@ -194,7 +194,7 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
     {
         Require.NotNull(models, nameof(models));
 
-        _ = BindRunner(models.ToList());
+        BindCore(models.ToList());
     }
 
     /// <summary>
@@ -208,9 +208,9 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
         Require.NotNull(models, nameof(models));
         
         if (_options.OffloadBatchBindings)
-            await Task.Run(() => BindRunner(models.ToList())).ConfigureAwait(false);
+            await Task.Run(() => BindCoreAsync(models.ToList())).ConfigureAwait(false);
         else
-            await BindRunner(models.ToList()).ConfigureAwait(false);
+            await BindCoreAsync(models.ToList()).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -356,7 +356,31 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
         viewModel.Disconnect();
     }
 
-    private async Task BindRunner(IReadOnlyCollection<TModel> models)
+    private void BindCore(IReadOnlyCollection<TModel> models)
+    {
+        List<TModel> newChildrenModels;
+        List<TModel> existingChildrenModels;
+        List<TModel> missingChildrenModels;
+
+        lock (_processedModelsLock)
+        {
+            newChildrenModels = models.Except(_processedModels).ToList();
+            existingChildrenModels = models.Intersect(_processedModels).ToList();
+            missingChildrenModels = _processedModels.Except(models).ToList();
+
+            _processedModels.AddRange(newChildrenModels);
+        }
+
+        if (newChildrenModels.Count == 0 && existingChildrenModels.Count == 0)
+            return;
+
+        TChildViewModel[] createdChildren = BindNewChildren(newChildrenModels);
+        BindExistingChildren(existingChildrenModels);
+
+        CommitChanges(createdChildren, missingChildrenModels);
+    }
+
+    private async Task BindCoreAsync(IReadOnlyCollection<TModel> models)
     {
         List<TModel> newChildrenModels;
         List<TModel> existingChildrenModels;
@@ -374,9 +398,90 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
         if (newChildrenModels.Count == 0 && existingChildrenModels.Count == 0)
             return;
 
-        TChildViewModel[] createdChildren = await BindNewChildren(newChildrenModels).ConfigureAwait(false);
-        await BindExistingChildren(existingChildrenModels).ConfigureAwait(false);
+        TChildViewModel[] createdChildren = await BindNewChildrenAsync(newChildrenModels).ConfigureAwait(false);
+        await BindExistingChildrenAsync(existingChildrenModels).ConfigureAwait(false);
 
+        CommitChanges(createdChildren, missingChildrenModels);
+    }
+
+    private TChildViewModel[] BindNewChildren(List<TModel> models)
+    {
+        TChildViewModel[] createdChildren = new TChildViewModel[models.Count];
+        if (models.Count >= _options.BindingParallelizationThreshold)
+        {
+            Parallel.For(0,
+                         createdChildren.Length,
+                         i => createdChildren[i] = _viewModel.CreateItem(models[i]));
+        }
+        else
+        {
+            for (int i = 0; i < models.Count; i++)
+                createdChildren[i] = _viewModel.CreateItem(models[i]);
+        }
+
+        return createdChildren;
+    }
+
+    private void BindExistingChildren(List<TModel> models)
+    {
+        if (models.Count >= _options.BindingParallelizationThreshold)
+        {
+            Parallel.For(0,
+                         models.Count,
+                         i => _viewModel.UpdateItem(models[i]));
+        }
+        else
+        {
+            foreach (var modelToUpdate in models)
+                _viewModel.UpdateItem(modelToUpdate);
+        }
+    }
+
+    private async Task<TChildViewModel[]> BindNewChildrenAsync(List<TModel> models)
+    {
+        TChildViewModel[] createdChildren = new TChildViewModel[models.Count];
+        if (models.Count >= _options.BindingParallelizationThreshold)
+        {
+            await Parallel.ForAsync(0,
+                                    createdChildren.Length,
+                                    (i, _) =>
+                                    {
+                                        createdChildren[i] = _viewModel.CreateItem(models[i]);
+                                        return ValueTask.CompletedTask;
+                                    })
+                          .ConfigureAwait(false);
+        }
+        else
+        {
+            for (int i = 0; i < models.Count; i++)
+                createdChildren[i] = _viewModel.CreateItem(models[i]);
+        }
+
+        return createdChildren;
+    }
+
+    private async Task BindExistingChildrenAsync(List<TModel> models)
+    {
+        if (models.Count >= _options.BindingParallelizationThreshold)
+        {
+            await Parallel.ForAsync(0,
+                                    models.Count,
+                                    (i, _) =>
+                                    {
+                                        _viewModel.UpdateItem(models[i]);
+                                        return ValueTask.CompletedTask;
+                                    })
+                          .ConfigureAwait(false);
+        }
+        else
+        {
+            foreach (var modelToUpdate in models)
+                _viewModel.UpdateItem(modelToUpdate);
+        }
+    }
+
+    private void CommitChanges(TChildViewModel[] createdChildren, List<TModel> missingChildrenModels)
+    {
         if (!DelayBindings && createdChildren.Length > 0)
         {   // Batch insertions may be affected by capacity enforcement, so we make sure the two operations are synchronized.
             // This will also ensure that any concurrent batch bindings are synchronized.
@@ -396,49 +501,6 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
         foreach (TChildViewModel createdChild in createdChildren)
         {
             Bind(createdChild);
-        }
-    }
-
-    private async Task<TChildViewModel[]> BindNewChildren(List<TModel> models)
-    {
-        TChildViewModel[] createdChildren = new TChildViewModel[models.Count];
-        if (models.Count >= _options.BindingParallelizationThreshold)
-        {
-            await Parallel.ForAsync(0, 
-                                    createdChildren.Length,
-                                    (i, _) =>
-                                    {
-                                        createdChildren[i] = _viewModel.CreateItem(models[i]);
-                                        return ValueTask.CompletedTask;
-                                    })
-                          .ConfigureAwait(false);
-        }
-        else
-        {
-            for (int i = 0; i < models.Count; i++)
-                createdChildren[i] = _viewModel.CreateItem(models[i]);
-        }
-
-        return createdChildren;
-    }
-
-    private async Task BindExistingChildren(List<TModel> models)
-    {
-        if (models.Count >= _options.BindingParallelizationThreshold)
-        {
-            await Parallel.ForAsync(0,
-                                    models.Count,
-                                    (i, _) =>
-                                    {
-                                        _viewModel.UpdateItem(models[i]);
-                                        return ValueTask.CompletedTask;
-                                    })
-                          .ConfigureAwait(false);
-        }
-        else
-        {
-            foreach (var modelToUpdate in models)
-                _viewModel.UpdateItem(modelToUpdate);
         }
     }
 
