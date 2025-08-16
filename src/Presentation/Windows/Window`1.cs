@@ -14,6 +14,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Markup;
+using System.Windows.Threading;
 using BadEcho.Presentation.Extensions;
 using BadEcho.Presentation.Properties;
 
@@ -88,8 +89,9 @@ public class Window<T> : Window, IComponentConnector
         Require.NotNull(contextAssembler, nameof(contextAssembler));
 
         T dataContext = await contextAssembler.Assemble(Dispatcher)
-                                              .ConfigureAwait(true);
-        DataContext = dataContext;
+                                              .ConfigureAwait(false);
+
+        this.Invoke(() => DataContext = dataContext, DispatcherPriority.DataBind);
     }
         
     /// <inheritdoc/>
