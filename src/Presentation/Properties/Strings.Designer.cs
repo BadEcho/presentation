@@ -349,6 +349,15 @@ namespace BadEcho.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No routed event named {0} could be found..
+        /// </summary>
+        internal static string UnknownRoutedEvent {
+            get {
+                return ResourceManager.GetString("UnknownRoutedEvent", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The provided handle does not belong to a window created by WPF..
         /// </summary>
         internal static string WindowNotPresentation {

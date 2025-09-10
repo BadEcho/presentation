@@ -197,6 +197,9 @@
 	<data name="BeginStoryboardActionNeedsTarget" xml:space="preserve">
 		<value>The BeginStoryboardAction must be attached to a FrameworkElement before execution.</value>
 	</data>
+	<data name="UnknownRoutedEvent" xml:space="preserve">
+		<value>No routed event named {0} could be found.</value>
+	</data>
 	<data name="ContextHasNoDispatcher" xml:space="preserve">
 		<value>No dispatcher for the context has been initialized because the context has not yet been run.</value>
 	</data>
