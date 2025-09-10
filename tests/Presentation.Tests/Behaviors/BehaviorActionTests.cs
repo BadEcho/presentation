@@ -11,7 +11,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Windows;
 using BadEcho.Presentation.Behaviors;
 using Xunit;
 
@@ -22,7 +21,7 @@ public class BehaviorActionTests
     [Fact]
     public void ExecuteActions_Empty_ReturnsTrue()
     {
-        var actions = new BehaviorActionCollection<DependencyObject>();
+        var actions = new BehaviorActionCollection();
 
         Assert.True(actions.ExecuteActions());
     }
@@ -32,7 +31,7 @@ public class BehaviorActionTests
     {
         var command = new DelegateCommand(_ => { });
 
-        var actions = new BehaviorActionCollection<DependencyObject>
+        var actions = new BehaviorActionCollection
                       {
                           new ConditionAction {IsEnabled = true},
                           new CommandAction {Command = command}
@@ -48,7 +47,7 @@ public class BehaviorActionTests
 
         var command = new DelegateCommand(_ => commandExecuted = true);
 
-        var actions = new BehaviorActionCollection<DependencyObject>
+        var actions = new BehaviorActionCollection
                       {
                           new ConditionAction {IsEnabled = true},
                           new CommandAction {Command = command}
@@ -64,7 +63,7 @@ public class BehaviorActionTests
     {
         var command = new DelegateCommand(_ => { });
 
-        var actions = new BehaviorActionCollection<DependencyObject>
+        var actions = new BehaviorActionCollection
                       {
                           new ConditionAction {IsEnabled = false},
                           new CommandAction {Command = command}
@@ -80,7 +79,7 @@ public class BehaviorActionTests
 
         var command = new DelegateCommand(_ => commandExecuted = true);
 
-        var actions = new BehaviorActionCollection<DependencyObject>
+        var actions = new BehaviorActionCollection
                       {
                           new ConditionAction {IsEnabled = false},
                           new CommandAction {Command = command}

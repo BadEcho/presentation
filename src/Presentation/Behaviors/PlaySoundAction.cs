@@ -21,7 +21,7 @@ namespace BadEcho.Presentation.Behaviors;
 /// Provides an action that, when executed, will play a sound described by a <see cref="byte"/> array bound to
 /// the dependency object this action is attached to.
 /// </summary>
-public sealed class PlaySoundAction : BehaviorAction<DependencyObject>
+public sealed class PlaySoundAction : BehaviorAction
 {
     /// <summary>
     /// Identifies the <see cref="Sound"/> dependency property.

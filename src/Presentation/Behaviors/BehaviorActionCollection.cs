@@ -18,9 +18,7 @@ namespace BadEcho.Presentation.Behaviors;
 /// <summary>
 /// Provides a collection of actions the controlling behavior is able to execute.
 /// </summary>
-/// <typeparam name="T">The type of <see cref="DependencyObject"/> this collection can attach to.</typeparam>
-public sealed class BehaviorActionCollection<T> : AttachableComponentCollection<T, BehaviorAction<T>>
-    where T : DependencyObject
+public sealed class BehaviorActionCollection : AttachableComponentCollection<DependencyObject, BehaviorAction>
 {
     /// <summary>
     /// Executes the actions in this collection until either an action fails or all actions are exhausted.
@@ -31,5 +29,5 @@ public sealed class BehaviorActionCollection<T> : AttachableComponentCollection<
 
     /// <inheritdoc/>
     protected override Freezable CreateInstanceCore() 
-        => new BehaviorActionCollection<T>();
+        => new BehaviorActionCollection();
 }

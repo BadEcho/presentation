@@ -19,7 +19,7 @@ namespace BadEcho.Presentation.Behaviors;
 /// Provides an action that, when executed, will prevent any and all subsequent actions from being executed based on the state
 /// of bound predicate property.
 /// </summary>
-public sealed class ConditionAction : BehaviorAction<DependencyObject>
+public sealed class ConditionAction : BehaviorAction
 {
     /// <summary>
     /// Identifies the <see cref="IsEnabled"/> dependency property.

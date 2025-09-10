@@ -45,7 +45,7 @@ public sealed class TargetUpdatedEventBehavior : EventBehavior
     /// </summary>
     /// <param name="source">The dependency object from which the property value is read.</param>
     /// <returns>The collection of actions executed by the instance of this behavior attached to <c>source</c>.</returns>
-    public static BehaviorActionCollection<DependencyObject> GetActions(DependencyObject source)
+    public static BehaviorActionCollection GetActions(DependencyObject source)
         => GetAttachment(source, ActionsProperty);
 
     /// <inheritdoc/>

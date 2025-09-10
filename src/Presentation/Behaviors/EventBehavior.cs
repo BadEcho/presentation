@@ -19,7 +19,7 @@ namespace BadEcho.Presentation.Behaviors;
 /// Provides a base compound behavior that executes a sequence of actions attached to a target dependency object upon the firing
 /// of a <see cref="RoutedEvent"/>.
 /// </summary>
-public abstract class EventBehavior : CompoundBehavior<FrameworkElement, BehaviorActionCollection<DependencyObject>>
+public abstract class EventBehavior : CompoundBehavior<FrameworkElement, BehaviorActionCollection>
 {
     private readonly RoutedEvent _routedEvent;
 
@@ -52,11 +52,11 @@ public abstract class EventBehavior : CompoundBehavior<FrameworkElement, Behavio
     /// <returns>A registered <see cref="DependencyProperty"/> for the behavior's auxiliary action collection.</returns>
     protected static DependencyProperty RegisterAttachment(string propertyName, Type ownerType, PropertyMetadata defaultMetadata)
         => DependencyProperty.RegisterAttached(propertyName,
-                                               typeof(BehaviorActionCollection<DependencyObject>),
+                                               typeof(BehaviorActionCollection),
                                                ownerType,
                                                defaultMetadata);
     /// <inheritdoc/>
-    protected override void OnValueAssociated(FrameworkElement targetObject, BehaviorActionCollection<DependencyObject> newValue)
+    protected override void OnValueAssociated(FrameworkElement targetObject, BehaviorActionCollection newValue)
     {
         base.OnValueAssociated(targetObject, newValue);
 
@@ -66,7 +66,7 @@ public abstract class EventBehavior : CompoundBehavior<FrameworkElement, Behavio
     }
         
     /// <inheritdoc/>
-    protected override void OnValueDisassociated(FrameworkElement targetObject, BehaviorActionCollection<DependencyObject> oldValue)
+    protected override void OnValueDisassociated(FrameworkElement targetObject, BehaviorActionCollection oldValue)
     {
         base.OnValueDisassociated(targetObject, oldValue);
 
@@ -79,9 +79,9 @@ public abstract class EventBehavior : CompoundBehavior<FrameworkElement, Behavio
     {
         var targetObject = (DependencyObject) sender;
 
-        BehaviorActionCollection<DependencyObject> actions = GetAttachment(targetObject, HostedActionsProperty);
+        BehaviorActionCollection actions = GetAttachment(targetObject, HostedActionsProperty);
 
-        foreach (BehaviorAction<DependencyObject> action in actions)
+        foreach (BehaviorAction action in actions)
         {
             if (!action.Execute())
                 return;

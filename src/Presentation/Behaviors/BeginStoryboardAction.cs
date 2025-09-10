@@ -22,7 +22,7 @@ namespace BadEcho.Presentation.Behaviors;
 /// Provides an action that, when executed, will apply animations found in a <see cref="Storyboard"/> instance bound to
 /// the dependency object this action is attached to.
 /// </summary>
-public sealed class BeginStoryboardAction : BehaviorAction<DependencyObject>
+public sealed class BeginStoryboardAction : BehaviorAction
 {
     /// <summary>
     /// Identifies the <see cref="Storyboard"/> dependency property.

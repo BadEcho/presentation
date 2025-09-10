@@ -19,7 +19,7 @@ namespace BadEcho.Presentation.Behaviors;
 /// <summary>
 /// Provides an action that, when executed, will execute a bound <see cref="ICommand"/> instance if possible.
 /// </summary>
-public sealed class CommandAction : BehaviorAction<DependencyObject>
+public sealed class CommandAction : BehaviorAction
 {
     /// <summary>
     /// Identifies the <see cref="Command"/> dependency property.

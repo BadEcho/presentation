@@ -18,9 +18,7 @@ namespace BadEcho.Presentation.Behaviors;
 /// <summary>
 /// Provides a base action executed as the result of a behavior's influence on the target object the behavior is attached to.
 /// </summary>
-/// <typeparam name="T">The type of <see cref="DependencyObject"/> this action can attach to.</typeparam>
-public abstract class BehaviorAction<T> : AttachableComponent<T>
-    where T : DependencyObject
+public abstract class BehaviorAction : AttachableComponent<DependencyObject>
 {
     /// <summary>
     /// Executes the action.
