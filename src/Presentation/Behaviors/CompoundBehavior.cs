@@ -16,7 +16,7 @@ using System.Windows;
 namespace BadEcho.Presentation.Behaviors;
 
 /// <summary>
-/// Provides a base behavior that influences the state and functioning of a target dependency object by controlling an
+/// Provides a base behavior that influences the state and functioning of a target framework-level element by controlling an
 /// auxiliary component that's attached to it.
 /// </summary>
 /// <typeparam name="TTarget">The type of <see cref="FrameworkElement"/> the auxiliary component attaches to.</typeparam>
@@ -26,15 +26,17 @@ public abstract class CompoundBehavior<TTarget, TAttachableComponent> : Behavior
     where TAttachableComponent : class, IAttachableComponent<TTarget>, new()
 {
     /// <summary>
-    /// Acts as an accessor to the auxiliary component attached to the target object.
+    /// Acts as an accessor to the auxiliary component attached to the target framework-level element.
     /// </summary>
-    /// <param name="source">The target dependency object the component is attached to.</param>
-    /// <param name="attachedProperty">The identifier of the dependency property the attachment is set to on the target object.</param>
+    /// <param name="source">The target framework-level element the component is attached to.</param>
+    /// <param name="attachedProperty">
+    /// The identifier of the dependency property the attachment is set to on the target framework-level element.
+    /// </param>
     /// <returns>
     /// The <typeparamref name="TAttachableComponent"/> instance of the behavior's auxiliary component attached to <c>source</c>
     /// as the <c>attachedProperty</c> property.
     /// </returns>
-    protected static TAttachableComponent GetAttachment(DependencyObject source, DependencyProperty attachedProperty)
+    protected static TAttachableComponent GetAttachment(TTarget source, DependencyProperty attachedProperty)
     {
         Require.NotNull(source, nameof(source));
 
@@ -57,7 +59,7 @@ public abstract class CompoundBehavior<TTarget, TAttachableComponent> : Behavior
         
         newValue.Attach(targetObject);
 
-        targetObject.Unloaded += OnUnloadedEvent;
+        targetObject.Unloaded += HandleTargetUnloaded;
     }
 
     /// <inheritdoc/>
@@ -68,10 +70,10 @@ public abstract class CompoundBehavior<TTarget, TAttachableComponent> : Behavior
         
         oldValue.Detach(targetObject);
 
-        targetObject.Unloaded -= OnUnloadedEvent;
+        targetObject.Unloaded -= HandleTargetUnloaded;
     }
     
-    private void OnUnloadedEvent(object sender, RoutedEventArgs e)
+    private void HandleTargetUnloaded(object sender, RoutedEventArgs e)
     {
         TTarget targetObject = (TTarget) sender;
 

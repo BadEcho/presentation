@@ -18,7 +18,7 @@ namespace BadEcho.Presentation.Behaviors;
 /// <summary>
 /// Provides a collection of event triggers for a controlling behavior.
 /// </summary>
-public sealed class EventTriggerCollection : AttachableComponentCollection<FrameworkElement, EventTrigger>
+public sealed class EventTriggerCollection : AttachableComponentCollection<UIElement, EventTrigger>
 {
     /// <inheritdoc/>
     protected override Freezable CreateInstanceCore()

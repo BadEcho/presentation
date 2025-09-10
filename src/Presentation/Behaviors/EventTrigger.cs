@@ -20,11 +20,11 @@ using BadEcho.Presentation.Properties;
 namespace BadEcho.Presentation.Behaviors;
 
 /// <summary>
-/// Provides an event trigger that will execute a sequence of actions upon the firing of a routed event on the target object
+/// Provides an event trigger that will execute a sequence of actions upon the firing of a routed event on the target element
 /// this component is attached to.
 /// </summary>
 [ContentProperty("Actions")]
-public sealed class EventTrigger : AttachableComponent<FrameworkElement>
+public sealed class EventTrigger : AttachableComponent<UIElement>
 {
     /// <summary>
     /// Identifies the <see cref="Actions"/> dependency property.
@@ -67,7 +67,7 @@ public sealed class EventTrigger : AttachableComponent<FrameworkElement>
     /// </summary>
     public string? EventName
     {
-        get => (string)GetValue(EventNameProperty);
+        get => (string) GetValue(EventNameProperty);
         set => SetValue(EventNameProperty, value);
     }
 
@@ -80,7 +80,7 @@ public sealed class EventTrigger : AttachableComponent<FrameworkElement>
 
         if (TargetObject == null)
             return;
-
+        
         foreach (BehaviorAction action in Actions)
         {
             action.Attach(TargetObject);
@@ -102,9 +102,9 @@ public sealed class EventTrigger : AttachableComponent<FrameworkElement>
     protected override Freezable CreateInstanceCore() 
         => new EventTrigger();
 
-    private static void OnEventNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void OnEventNameChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
-        EventTrigger trigger = (EventTrigger) d;
+        EventTrigger trigger = (EventTrigger) sender;
 
         trigger.UpdateEventSubscription();
     }
@@ -128,7 +128,7 @@ public sealed class EventTrigger : AttachableComponent<FrameworkElement>
         if (_routedEvent == null)
             throw new InvalidOperationException(Strings.UnknownRoutedEvent.InvariantFormat(EventName));
 
-        TargetObject.AddHandler(_routedEvent, (RoutedEventHandler)OnEvent);
+        TargetObject.AddHandler(_routedEvent, (RoutedEventHandler) OnEvent);
     }
 
     private void OnEvent(object sender, RoutedEventArgs e)

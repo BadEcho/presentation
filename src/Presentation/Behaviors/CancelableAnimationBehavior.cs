@@ -16,7 +16,7 @@ using System.Windows;
 namespace BadEcho.Presentation.Behaviors;
 
 /// <summary>
-/// Provides a behavior that, when attached to a target dependency object, allows for the immediate cancellation of an animation
+/// Provides a behavior that, when attached to a target framework-level element, allows for the immediate cancellation of an animation
 /// running on it. 
 /// </summary>
 public sealed class CancelableAnimationBehavior : CompoundBehavior<FrameworkElement, CancelableAnimationState>
@@ -29,11 +29,11 @@ public sealed class CancelableAnimationBehavior : CompoundBehavior<FrameworkElem
         = RegisterAttachment();
 
     /// <summary>
-    /// Gets the value of the <see cref="StateProperty"/> attached property for a given <see cref="DependencyObject"/>.
+    /// Gets the value of the <see cref="StateProperty"/> attached property for a given <see cref="FrameworkElement"/>.
     /// </summary>
-    /// <param name="source">The dependency object from which the property value is read.</param>
+    /// <param name="source">The framework-level element from which the property value is read.</param>
     /// <returns>The <see cref="CancelableAnimationState"/> associated with <c>source</c>.</returns>
-    public static CancelableAnimationState GetState(DependencyObject source)
+    public static CancelableAnimationState GetState(FrameworkElement source)
     {
         Require.NotNull(source, nameof(source));
 
@@ -41,11 +41,11 @@ public sealed class CancelableAnimationBehavior : CompoundBehavior<FrameworkElem
     }
 
     /// <summary>
-    /// Sets the value of the <see cref="StateProperty"/> attached property on a given <see cref="DependencyObject"/>.
+    /// Sets the value of the <see cref="StateProperty"/> attached property on a given <see cref="FrameworkElement"/>.
     /// </summary>
-    /// <param name="source">The dependency object to which the property is written.</param>
+    /// <param name="source">The framework-level element to which the property is written.</param>
     /// <param name="value">The <see cref="CancelableAnimationState"/> to set.</param>
-    public static void SetState(DependencyObject source, CancelableAnimationState value)
+    public static void SetState(FrameworkElement source, CancelableAnimationState value)
     {
         Require.NotNull(source, nameof(source));
 
@@ -88,7 +88,7 @@ public sealed class CancelableAnimationBehavior : CompoundBehavior<FrameworkElem
         if (sender == null)
             return;
 
-        var targetObject = (FrameworkElement)sender;
+        var targetObject = (FrameworkElement) sender;
 
         CancelableAnimationState state = GetAttachment(targetObject, StateProperty);
 
