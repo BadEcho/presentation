@@ -24,7 +24,7 @@ namespace BadEcho.Presentation.Behaviors;
 /// this component is attached to.
 /// </summary>
 [ContentProperty("Actions")]
-public sealed class EventTrigger : AttachableComponent<FrameworkElement> //CompoundBehavior<FrameworkElement, BehaviorActionCollection<DependencyObject>>
+public sealed class EventTrigger : AttachableComponent<FrameworkElement>
 {
     /// <summary>
     /// Identifies the <see cref="Actions"/> dependency property.
