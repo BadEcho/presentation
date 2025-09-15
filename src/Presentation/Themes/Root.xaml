@@ -10,7 +10,8 @@
 		https://www.gnu.org/licenses/agpl-3.0.html
     </copyright>
 -->
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Resources/TitleBar.xaml" />
+    </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

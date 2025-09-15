@@ -367,6 +367,15 @@ namespace BadEcho.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Window event lacks event sender..
+        /// </summary>
+        internal static string WindowEventNoEventSender {
+            get {
+                return ResourceManager.GetString("WindowEventNoEventSender", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The provided handle does not belong to a window created by WPF..
         /// </summary>
         internal static string WindowNotPresentation {

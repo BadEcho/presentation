@@ -206,4 +206,7 @@
 	<data name="ContextHasNoDispatcher" xml:space="preserve">
 		<value>No dispatcher for the context has been initialized because the context has not yet been run.</value>
 	</data>
+	<data name="WindowEventNoEventSender" xml:space="preserve">
+		<value>Window event lacks event sender.</value>
+	</data>
 </root>
