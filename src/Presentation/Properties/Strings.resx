@@ -125,9 +125,12 @@
   <data name="BehaviorAlreadyAttachedToTarget" xml:space="preserve">
     <value>Behavior is already attached to the target dependency object.</value>
   </data>
-  <data name="BehaviorUnsupportedTargetObject" xml:space="preserve">
+  <data name="BehaviorUnsupportedTarget" xml:space="preserve">
     <value>This behavior only supports attachment to target objects of type '{0}'.</value>
   </data>
+	<data name="BehaviorNotAttachedToTarget" xml:space="preserve">
+		<value>Behavior is not attached to the target dependency object.</value>
+	</data>
   <data name="CanOnlyConvertBadEchoKeys" xml:space="preserve">
     <value>Can only convert Bad Echo Presentation framework specific resource key types.</value>
   </data>

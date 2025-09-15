@@ -115,11 +115,20 @@ namespace BadEcho.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Behavior is not attached to the target dependency object..
+        /// </summary>
+        internal static string BehaviorNotAttachedToTarget {
+            get {
+                return ResourceManager.GetString("BehaviorNotAttachedToTarget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This behavior only supports attachment to target objects of type &apos;{0}&apos;..
         /// </summary>
-        internal static string BehaviorUnsupportedTargetObject {
+        internal static string BehaviorUnsupportedTarget {
             get {
-                return ResourceManager.GetString("BehaviorUnsupportedTargetObject", resourceCulture);
+                return ResourceManager.GetString("BehaviorUnsupportedTarget", resourceCulture);
             }
         }
         
