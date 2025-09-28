@@ -14,7 +14,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace BadEcho.Presentation.Hosting.Tests;
+namespace BadEcho.Presentation.Extensions.Tests;
 
 public class Startup
 {

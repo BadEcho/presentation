@@ -14,7 +14,7 @@
 using System.Windows;
 using Microsoft.Extensions.Hosting;
 
-namespace BadEcho.Presentation.Hosting;
+namespace BadEcho.Presentation.Extensions;
 
 /// <summary>
 /// Provides a hosted service that runs a WPF application.

@@ -17,9 +17,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadEcho.Presentation.Tests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadEcho.Presentation", "src\Presentation\BadEcho.Presentation.csproj", "{C0DBBB6E-9A9F-4499-B51B-8714BA18C337}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadEcho.Presentation.Hosting", "src\Presentation.Hosting\BadEcho.Presentation.Hosting.csproj", "{2FAB7A84-85F2-8F1C-F364-A175EBC0FEFE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadEcho.Presentation.Extensions", "src\Presentation.Extensions\BadEcho.Presentation.Extensions.csproj", "{2FAB7A84-85F2-8F1C-F364-A175EBC0FEFE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadEcho.Presentation.Hosting.Tests", "tests\Presentation.Hosting.Tests\BadEcho.Presentation.Hosting.Tests.csproj", "{B322FF96-8AED-4E3E-9C86-9A6E312E23D2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BadEcho.Presentation.Extensions.Tests", "tests\Presentation.Extensions.Tests\BadEcho.Presentation.Extensions.Tests.csproj", "{B322FF96-8AED-4E3E-9C86-9A6E312E23D2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

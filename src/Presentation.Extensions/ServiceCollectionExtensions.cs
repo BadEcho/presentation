@@ -14,7 +14,7 @@
 using System.Windows;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace BadEcho.Presentation.Hosting;
+namespace BadEcho.Presentation.Extensions;
 
 /// <summary>
 /// Provides extensions methods for setting up services that integrate the Bad Echo Presentation framework and Windows

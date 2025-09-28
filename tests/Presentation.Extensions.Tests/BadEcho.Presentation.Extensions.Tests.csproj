@@ -23,7 +23,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\Presentation.Hosting\BadEcho.Presentation.Hosting.csproj" />
+		<ProjectReference Include="..\..\src\Presentation.Extensions\BadEcho.Presentation.Extensions.csproj" />
 		<ProjectReference Include="..\..\src\Presentation\BadEcho.Presentation.csproj" />
 	</ItemGroup>
 

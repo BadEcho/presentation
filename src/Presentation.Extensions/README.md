@@ -1,7 +1,7 @@
-# Bad Echo Presentation Hosting Extensions
+# Bad Echo Presentation Framework Extensions
 [![Discord](https://img.shields.io/discord/348353194801364992?style=flat-square&label=Discord&logo=discord&logoColor=white&color=7289DA)](https://discord.gg/omni) 
 
-The `BadEcho.Presentation.Hosting` library integrates the Bad Echo Presentation framework (as well as Window Presentation Foundation as a whole) with Microsoft.Extensions.Hosting and its dependency injection container. Using this library will allow an application host to run a WPF application and provide the WPF application access to the various services and features registered with the host.
+The `BadEcho.Presentation.Extensions` library integrates the Bad Echo Presentation framework (as well as Window Presentation Foundation as a whole) with the Microsoft.Extensions.* family of libraries and the dependency injection container they use. Using this library will allow an application host to run a WPF application and provide the WPF application access to the various services and features registered with the host.
 
 This package exists to be used by specific Bad Echo applications, but is licensed under the GNU Affero General Public License so that others may enjoy it as well; see the accompanying [license](https://github.com/BadEcho/presentation/blob/master/LICENSE.md) for details.
 

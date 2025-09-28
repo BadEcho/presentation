@@ -1,10 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<Title>Bad Echo Presentation Hosting Extensions</Title>
+		<Title>Bad Echo Presentation Framework Extensions</Title>
 		<AssemblyTitle>$(Title)</AssemblyTitle>
 		<Product>$(Title)</Product>
-		<Description>Integrates the Bad Echo Presentation framework (as well as Window Presentation Foundation as a whole) with Microsoft.Extensions.Hosting and its dependency injection container.</Description>
+		<Description>
+			Integrates the Bad Echo Presentation framework (as well as Window Presentation Foundation as a whole) with the Microsoft.Extensions.* family of libraries and the dependency injection container they use.
+		</Description>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<TargetFramework>net9.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>

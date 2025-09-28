@@ -11,6 +11,6 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-namespace BadEcho.Presentation.Hosting.Tests;
+namespace BadEcho.Presentation.Extensions.Tests;
 
 public sealed class TestService;
