@@ -28,6 +28,13 @@ public sealed class CommandAction : BehaviorAction
         = DependencyProperty.Register(nameof(Command),
                                       typeof(ICommand),
                                       typeof(CommandAction));
+    /// <summary>
+    /// Identifies the <see cref="Parameter"/> dependency property.
+    /// </summary>
+    public static readonly DependencyProperty ParameterProperty
+        = DependencyProperty.Register(nameof(Parameter),
+                                      typeof(object),
+                                      typeof(CommandAction));
 
     /// <summary>
     /// Gets or sets the <see cref="ICommand"/> instance that will be executed when this action is executed.
@@ -38,16 +45,25 @@ public sealed class CommandAction : BehaviorAction
         set => SetValue(CommandProperty, value);
     }
 
+    /// <summary>
+    /// Gets or sets the data used by <see cref="Command"/>.
+    /// </summary>
+    public object? Parameter
+    {
+        get => (object?) GetValue(ParameterProperty);
+        set => SetValue(ParameterProperty, value);
+    }
+
     /// <inheritdoc/>
     public override bool Execute()
     {
         if (Command == null)
             return false;
 
-        if (!Command.CanExecute(null))
+        if (!Command.CanExecute(Parameter))
             return false;
 
-        Command.Execute(null);
+        Command.Execute(Parameter);
 
         return true;
     }

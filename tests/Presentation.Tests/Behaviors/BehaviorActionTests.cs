@@ -89,4 +89,19 @@ public class BehaviorActionTests
 
         Assert.False(commandExecuted);
     }
+
+    [Fact]
+    public void ExecuteActions_CommandWithParameter_ParameterPassed()
+    {
+        var parameter = new object();
+
+        var command = new DelegateCommand(o => Assert.Equal(parameter, o));
+
+        var actions = new BehaviorActionCollection()
+                      {
+                          new CommandAction { Command = command, Parameter = parameter }
+                      };
+
+        actions.ExecuteActions();
+    }
 }
