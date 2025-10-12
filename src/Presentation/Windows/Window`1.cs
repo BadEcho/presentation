@@ -71,7 +71,7 @@ public class Window<T> : Window, IComponentConnector
     }
 
     /// <summary>
-    /// Gets or sets the typed data context for an element when it participated in data binding.
+    /// Gets or sets the typed data context for an element when it participates in data binding.
     /// </summary>
     public new T DataContext
     {
