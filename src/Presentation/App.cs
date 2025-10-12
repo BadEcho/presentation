@@ -167,7 +167,16 @@ internal sealed class App
     {
         TextBox textBox = (TextBox)e.OriginalSource;
 
-        textBox.Invoke(textBox.SelectAll, DispatcherPriority.Input);
+        try
+        {
+            textBox.Invoke(textBox.SelectAll, DispatcherPriority.Input);
+        }
+        catch (InvalidOperationException ex)
+        {   // This is mainly for Snoop compatibility. Many of its controls, such as the text boxes in its property grids, frequently
+            // have their dispatchers' processing disabled.
+            if (ex.HResult == unchecked((int) 0x80131509)) 
+                Logger.Warning(Strings.TextBoxDispatcherProcessingDisabled);
+        }
     }
 
     private static void ApplyDisplayConfiguration(PresentationConfiguration configuration, Window mainWindow)
