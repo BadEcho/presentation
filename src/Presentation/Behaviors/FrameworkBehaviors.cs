@@ -18,7 +18,7 @@ namespace BadEcho.Presentation.Behaviors;
 /// <summary>
 /// Provides general-purpose behaviors that target and augment framework-level elements.
 /// </summary>
-public static class Behaviors
+public static class FrameworkBehaviors
 {
     /// <summary>
     /// Identifies the attached property that gets or sets a <see cref="FrameworkElement"/> instance's collection of
@@ -42,7 +42,7 @@ public static class Behaviors
         return DependencyProperty.RegisterAttached(
             NameOf.ReadAccessorEnabledDependencyPropertyName(() => EventTriggersProperty),
             typeof(EventTriggerCollection),
-            typeof(Behaviors),
+            typeof(FrameworkBehaviors),
             behavior.DefaultMetadata);
     }
 
@@ -52,7 +52,7 @@ public static class Behaviors
     private sealed class EventTriggersBehavior : CompoundBehavior<FrameworkElement, EventTriggerCollection>
     {
         /// <summary>
-        /// Gets the value of the <see cref="Behaviors.EventTriggersProperty"/> attached property for a given
+        /// Gets the value of the <see cref="FrameworkBehaviors.EventTriggersProperty"/> attached property for a given
         /// <see cref="FrameworkElement"/>.
         /// </summary>
         /// <param name="source">The framework-level element from which the property value is read.</param>
