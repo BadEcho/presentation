@@ -12,6 +12,7 @@
 // -----------------------------------------------------------------------
 
 using System.Windows;
+using BadEcho.Presentation.Navigation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BadEcho.Presentation.Extensions;
@@ -38,6 +39,9 @@ public static class ServiceCollectionExtensions
             sp => UserInterface.RunApplication(sp.GetRequiredService<Application>));
 
         services.AddHostedService<ApplicationHostedService>();
+
+        services.AddSingleton<INavigationContextSource, ServiceNavigationContextSource>();
+        services.AddSingleton<NavigationService>();
 
         return services;
     }

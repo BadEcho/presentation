@@ -241,6 +241,24 @@ namespace BadEcho.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to There are no entries in back navigation history..
+        /// </summary>
+        internal static string EmptyBackNavigationHistory {
+            get {
+                return ResourceManager.GetString("EmptyBackNavigationHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no entries in forward navigation history..
+        /// </summary>
+        internal static string EmptyForwardNavigationHistory {
+            get {
+                return ResourceManager.GetString("EmptyForwardNavigationHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to An attempt to bind a data context of an incompatible type to a context-specific Bad Echo Presentation framework window was made..
         /// </summary>
         internal static string IncompatibleDataContextType {
@@ -304,6 +322,15 @@ namespace BadEcho.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to NavigationService does not have a host set..
+        /// </summary>
+        internal static string NavigationServiceNoHost {
+            get {
+                return ResourceManager.GetString("NavigationServiceNoHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to A stepped binding requires the value for the property &apos;{0}&apos; to be able to be converted to a 32-bit signed integer..
         /// </summary>
         internal static string NotSteppablePropertyValue {
@@ -354,6 +381,15 @@ namespace BadEcho.Presentation.Properties {
         internal static string SteppingDurationCannotBeNegative {
             get {
                 return ResourceManager.GetString("SteppingDurationCannotBeNegative", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot select the text box contents because dispatcher processing is suspended..
+        /// </summary>
+        internal static string TextBoxDispatcherProcessingDisabled {
+            get {
+                return ResourceManager.GetString("TextBoxDispatcherProcessingDisabled", resourceCulture);
             }
         }
         

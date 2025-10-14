@@ -209,4 +209,16 @@
 	<data name="WindowEventNoEventSender" xml:space="preserve">
 		<value>Window event lacks event sender.</value>
 	</data>
+	<data name="TextBoxDispatcherProcessingDisabled" xml:space="preserve">
+		<value>Cannot select the text box contents because dispatcher processing is suspended.</value>
+	</data>
+	<data name="EmptyBackNavigationHistory" xml:space="preserve">
+		<value>There are no entries in back navigation history.</value>
+	</data>
+	<data name="EmptyForwardNavigationHistory" xml:space="preserve">
+		<value>There are no entries in forward navigation history.</value>
+	</data>
+	<data name="NavigationServiceNoHost" xml:space="preserve">
+		<value>NavigationService does not have a host set.</value>
+	</data>
 </root>
