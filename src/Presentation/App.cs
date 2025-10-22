@@ -156,7 +156,7 @@ internal sealed class App
         e.Handled = true;
 
         // Because the standard event handlers no longer run, we must set focus ourselves, otherwise the text box becomes unclickable.
-        textBox.Invoke(() => textBox.Focus(), DispatcherPriority.Input);
+        textBox.Invoke(() => textBox.Focus(), DispatcherPriority.Send);
     }
 
     /// <summary>
@@ -169,7 +169,7 @@ internal sealed class App
 
         try
         {
-            textBox.Invoke(textBox.SelectAll, DispatcherPriority.Input);
+            textBox.Invoke(textBox.SelectAll, DispatcherPriority.Send);
         }
         catch (InvalidOperationException ex)
         {   // This is mainly for Snoop compatibility. Many of its controls, such as the text boxes in its property grids, frequently
