@@ -89,13 +89,16 @@ public abstract class PolymorphicCollectionViewModel<TModel, TChildViewModel> : 
     /// <summary>
     /// Registers a derived model and child view model pair for automatic model to view model operative resolution.
     /// </summary>
+    /// <param name="configureChildViewModel">
+    /// Optional. Used to configure a derived child view model following its creation.
+    /// </param>
     /// <typeparam name="TModelImpl">
     /// A derivation of the type of data bound to view models contained in the collection-typed view model.
     /// </typeparam>
     /// <typeparam name="TChildViewModelImpl">
     /// A derivation of the type of view model contained in the collection-typed view model.
     /// </typeparam>
-    protected void RegisterDerivation<TModelImpl, TChildViewModelImpl>()
+    protected void RegisterDerivation<TModelImpl, TChildViewModelImpl>(Action<TChildViewModelImpl>? configureChildViewModel = null)
         where TModelImpl : class, TModel
         where TChildViewModelImpl : ViewModel<TModelImpl>, TChildViewModel, new()
     {
@@ -111,6 +114,7 @@ public abstract class PolymorphicCollectionViewModel<TModel, TChildViewModel> : 
                                     var childViewModel = new TChildViewModelImpl();
 
                                     childViewModel.Bind(model);
+                                    configureChildViewModel?.Invoke(childViewModel);
 
                                     return childViewModel;
                                 });
