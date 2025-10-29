@@ -12,7 +12,6 @@
 // -----------------------------------------------------------------------
 
 using System.Windows;
-using System.Windows.Markup;
 using BadEcho.Extensions;
 
 using BadEcho.Presentation.Properties;
@@ -23,16 +22,8 @@ namespace BadEcho.Presentation.Behaviors;
 /// Provides an event trigger that will execute a sequence of actions upon the firing of a routed event on the target element
 /// this component is attached to.
 /// </summary>
-[ContentProperty("Actions")]
-public sealed class EventTrigger : AttachableComponent<UIElement>
+public sealed class EventTrigger : ActionSource<EventTrigger>
 {
-    /// <summary>
-    /// Identifies the <see cref="Actions"/> dependency property.
-    /// </summary>
-    public static readonly DependencyProperty ActionsProperty
-        = DependencyProperty.Register(nameof(Actions),
-                                      typeof(BehaviorActionCollection),
-                                      typeof(EventTrigger));
     /// <summary>
     /// Identifies the <see cref="EventName"/> dependency property.
     /// </summary>
@@ -43,24 +34,6 @@ public sealed class EventTrigger : AttachableComponent<UIElement>
                                       new FrameworkPropertyMetadata(OnEventNameChanged));
 
     private RoutedEvent? _routedEvent;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="EventTrigger"/> class.
-    /// </summary>
-    public EventTrigger()
-    {
-        var actions = new BehaviorActionCollection();
-        
-        SetValue(ActionsProperty, actions);
-    }
-
-    /// <summary>
-    /// Gets the collection of actions executed upon the firing of the specified routed event.
-    /// </summary>
-    public BehaviorActionCollection Actions
-    {
-        get => (BehaviorActionCollection) GetValue(ActionsProperty);
-    }
 
     /// <summary>
     /// Gets or sets the name of the routed event to execute actions in response to.
@@ -77,14 +50,6 @@ public sealed class EventTrigger : AttachableComponent<UIElement>
         base.OnAttached();
 
         UpdateEventSubscription();
-
-        if (TargetObject == null)
-            return;
-        
-        foreach (BehaviorAction action in Actions)
-        {
-            action.Attach(TargetObject);
-        }
     }
 
     /// <inheritdoc/>
@@ -96,11 +61,8 @@ public sealed class EventTrigger : AttachableComponent<UIElement>
             return;
 
         TargetObject.RemoveHandler(_routedEvent, (RoutedEventHandler) OnEvent);
+        _routedEvent = null;
     }
-
-    /// <inheritdoc/>
-    protected override Freezable CreateInstanceCore() 
-        => new EventTrigger();
 
     private static void OnEventNameChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
     {
@@ -119,7 +81,7 @@ public sealed class EventTrigger : AttachableComponent<UIElement>
             TargetObject.RemoveHandler(_routedEvent, (RoutedEventHandler) OnEvent);
             _routedEvent = null;
         }
-
+        
         if (string.IsNullOrEmpty(EventName))
             return;
 
@@ -132,13 +94,5 @@ public sealed class EventTrigger : AttachableComponent<UIElement>
     }
 
     private void OnEvent(object sender, RoutedEventArgs e)
-    {
-        BehaviorActionCollection actions = Actions;
-
-        foreach (BehaviorAction action in actions)
-        {
-            if (!action.Execute())
-                return;
-        }
-    }
+        => ExecuteActions();
 }
