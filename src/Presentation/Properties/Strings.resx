@@ -221,4 +221,7 @@
 	<data name="NavigationServiceNoHost" xml:space="preserve">
 		<value>NavigationService does not have a host set.</value>
 	</data>
+	<data name="ValidationFileDoesNotExist" xml:space="preserve">
+		<value>File does not exist.</value>
+	</data>
 </root>

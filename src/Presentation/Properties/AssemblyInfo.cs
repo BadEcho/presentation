@@ -18,6 +18,7 @@ using BadEcho.Properties;
 [assembly: XmlnsDefinition(Constants.Namespace, "BadEcho.Presentation.Windows")]
 [assembly: XmlnsDefinition(Constants.Namespace, "BadEcho.Presentation.Selectors")]
 [assembly: XmlnsDefinition(Constants.Namespace, "BadEcho.Presentation.Controls")]
+[assembly: XmlnsDefinition(Constants.Namespace, "BadEcho.Presentation.ValidationRules")]
 [assembly: XmlnsDefinition(Constants.Namespace, "BadEcho.Presentation")]
 
 [assembly: ThemeInfo(ResourceDictionaryLocation.None,
@@ -101,3 +102,9 @@ using BadEcho.Properties;
                            Scope = "member",
                            Target = "~M:BadEcho.Presentation.SteppedBinder.GetNextWritableValue(System.Object,System.String,System.Double)",
                            Justification = "This method is meant to return values that are sometimes integers and sometimes doubles. Forcing the method to always cast to double would break SteppingOptions.IsInteger functionality.")]
+
+[assembly: SuppressMessage("Naming",
+                           "CA1721",
+                           Scope = "member",
+                           Target = "~P:BadEcho.Presentation.Behaviors.Trigger.Value",
+                           Justification = "While the warning has merit, the properties of this type should mirror those of System.Windows.Trigger for usability purposes.")]

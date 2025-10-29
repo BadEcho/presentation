@@ -403,6 +403,15 @@ namespace BadEcho.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to File does not exist..
+        /// </summary>
+        internal static string ValidationFileDoesNotExist {
+            get {
+                return ResourceManager.GetString("ValidationFileDoesNotExist", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Window event lacks event sender..
         /// </summary>
         internal static string WindowEventNoEventSender {
