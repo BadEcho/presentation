@@ -108,3 +108,9 @@ using BadEcho.Properties;
                            Scope = "member",
                            Target = "~P:BadEcho.Presentation.Behaviors.Trigger.Value",
                            Justification = "While the warning has merit, the properties of this type should mirror those of System.Windows.Trigger for usability purposes.")]
+
+[assembly: SuppressMessage("Naming",
+                           "CA1721",
+                           Scope = "member",
+                           Target = "~P:BadEcho.Presentation.Behaviors.OverrideResourceAction.Value",
+                           Justification = "While this warning also has merit, there is value in having this declaratively set property be akin to the likes of Setter.Value, etc. for usability purposes.")]
