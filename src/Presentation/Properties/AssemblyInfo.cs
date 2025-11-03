@@ -18,7 +18,6 @@ using BadEcho.Properties;
 [assembly: XmlnsDefinition(Constants.Namespace, "BadEcho.Presentation.Windows")]
 [assembly: XmlnsDefinition(Constants.Namespace, "BadEcho.Presentation.Selectors")]
 [assembly: XmlnsDefinition(Constants.Namespace, "BadEcho.Presentation.Controls")]
-[assembly: XmlnsDefinition(Constants.Namespace, "BadEcho.Presentation.ValidationRules")]
 [assembly: XmlnsDefinition(Constants.Namespace, "BadEcho.Presentation")]
 
 [assembly: ThemeInfo(ResourceDictionaryLocation.None,

@@ -18,7 +18,7 @@ namespace BadEcho.Presentation.ViewModels;
 /// <summary>
 /// Defines a view abstraction that automates communication between a view and bound data.
 /// </summary>
-public interface IViewModel : INotifyPropertyChanged
+public interface IViewModel : INotifyPropertyChanged, INotifyDataErrorInfo
 {
     /// <summary>
     /// Disconnects the view model from any data being modeled.
