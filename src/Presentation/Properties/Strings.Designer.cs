@@ -115,15 +115,6 @@ namespace BadEcho.Presentation.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Behavior is not attached to the target dependency object..
-        /// </summary>
-        internal static string BehaviorNotAttachedToTarget {
-            get {
-                return ResourceManager.GetString("BehaviorNotAttachedToTarget", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This behavior only supports attachment to target objects of type &apos;{0}&apos;..
         /// </summary>
         internal static string BehaviorUnsupportedTarget {
@@ -327,6 +318,15 @@ namespace BadEcho.Presentation.Properties {
         internal static string NavigationServiceNoHost {
             get {
                 return ResourceManager.GetString("NavigationServiceNoHost", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Behavior needs to be associated with a control..
+        /// </summary>
+        internal static string NonClientNotAssociatedWithControl {
+            get {
+                return ResourceManager.GetString("NonClientNotAssociatedWithControl", resourceCulture);
             }
         }
         

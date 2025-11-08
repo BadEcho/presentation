@@ -18,6 +18,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shell;
 using System.Windows.Threading;
+using BadEcho.Presentation.Properties;
 using Microsoft.Win32;
 using Window = System.Windows.Window;
 
@@ -299,7 +300,8 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
     private void HandleTargetLoaded(object sender, RoutedEventArgs e)
     {
         ContentControl contentControl = (ContentControl)sender;
-        Control nonClientControl = GetAssociatedValue(contentControl);
+        Control nonClientControl = AssociatedValue
+                                   ?? throw new InvalidOperationException(Strings.NonClientNotAssociatedWithControl);
 
         // We aren't working with an actual 'Window' during design-time, so, in that case, we bail out here.
         if (DesignerProperties.GetIsInDesignMode(contentControl))
@@ -365,7 +367,8 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
             return;
 
         ContentControl contentControl = (ContentControl)sender;
-        Control nonClientControl = GetAssociatedValue(contentControl);
+        Control nonClientControl = AssociatedValue
+                                   ?? throw new InvalidOperationException(Strings.NonClientNotAssociatedWithControl);
 
         this.BypassHandlers(() => AddNonClientControl(contentControl, nonClientControl));
     }

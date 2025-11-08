@@ -28,11 +28,12 @@ namespace BadEcho.Presentation;
 /// <typeparam name="TAttachableComponent">
 /// The type of <see cref="IAttachableComponent{TTarget}"/> objects in the collection.
 /// </typeparam>
-public abstract class AttachableComponentCollection<TTarget, TAttachableComponent> 
+public abstract class AttachableComponentCollection<TTarget, TAttachableComponent>
     : FreezableCollection<TAttachableComponent>, IAttachableComponent<TTarget> where TTarget : DependencyObject
                                                                                where TAttachableComponent : AttachableComponent<TTarget>
 {
-    private TTarget? _targetObject;
+    private readonly WeakReference<TTarget> _targetObject
+        = WeakReferenceExtensions.WithNullTarget<TTarget>();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="AttachableComponentCollection{TTarget,TAttachableComponent}"/> class.
@@ -40,7 +41,7 @@ public abstract class AttachableComponentCollection<TTarget, TAttachableComponen
     protected AttachableComponentCollection()
     {
         INotifyCollectionChanged collectionChanged = this;
-            
+
         collectionChanged.CollectionChanged +=
             (_, e) => HandleCollectionChanged(new EmptiableNotifyCollectionChangedEventArgs(e));
     }
@@ -55,7 +56,7 @@ public abstract class AttachableComponentCollection<TTarget, TAttachableComponen
             throw new InvalidOperationException(Strings.AttachableCannotTargetMultipleObjects);
 
         WritePreamble();
-        _targetObject = targetObject;
+        _targetObject.SetTarget(targetObject);
         WritePostscript();
 
         AttachItems();
@@ -70,7 +71,7 @@ public abstract class AttachableComponentCollection<TTarget, TAttachableComponen
         DetachItems();
 
         WritePreamble();
-        _targetObject = null;
+        _targetObject.SetNullTarget();
         WritePostscript();
     }
 
@@ -84,7 +85,9 @@ public abstract class AttachableComponentCollection<TTarget, TAttachableComponen
         {
             ReadPreamble();
 
-            return _targetObject;
+            _targetObject.TryGetTarget(out TTarget? targetObject);
+
+            return targetObject;
         }
     }
 

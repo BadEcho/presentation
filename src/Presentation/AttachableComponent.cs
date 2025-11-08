@@ -26,7 +26,8 @@ namespace BadEcho.Presentation;
 public abstract class AttachableComponent<T> : Animatable, IAttachableComponent<T>
     where T : DependencyObject
 {
-    private T? _targetObject;
+    private readonly WeakReference<T> _targetObject
+        = WeakReferenceExtensions.WithNullTarget<T>();
 
     /// <summary>
     /// Gets the target dependency object this component is attached to while assuring this <see cref="Freezable"/>
@@ -38,7 +39,9 @@ public abstract class AttachableComponent<T> : Animatable, IAttachableComponent<
         {
             ReadPreamble();
 
-            return _targetObject;
+            _targetObject.TryGetTarget(out T? targetObject);
+
+            return targetObject;
         }
     }
 
@@ -52,7 +55,7 @@ public abstract class AttachableComponent<T> : Animatable, IAttachableComponent<
             throw new InvalidOperationException(Strings.AttachableCannotTargetMultipleObjects);
 
         WritePreamble();
-        _targetObject = targetObject;
+        _targetObject.SetTarget(targetObject);
         OnAttached();
         WritePostscript();
     }
@@ -62,10 +65,10 @@ public abstract class AttachableComponent<T> : Animatable, IAttachableComponent<
     {
         if (TargetObject == null || !TargetObject.Equals<T>(targetObject))
             return;
-            
+
         WritePreamble();
         OnDetaching();
-        _targetObject = null;
+        _targetObject.SetNullTarget();
         WritePostscript();
     }
 
