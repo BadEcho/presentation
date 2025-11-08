@@ -16,10 +16,29 @@ using System.Windows;
 namespace BadEcho.Presentation.Behaviors;
 
 /// <summary>
-/// Provides a factory class for registering dependency properties as attachable delegate behaviors.
+/// Provides a factory class for registering dependency properties as attachable behaviors.
 /// </summary>
-public static class DelegateBehaviorFactory
+public static class BehaviorFactory
 {
+    /// <summary>
+    /// Creates a <see cref="DependencyProperty"/> instance with an attached behavior.
+    /// </summary>
+    /// <typeparam name="TBehavior">The type of behavior being created.</typeparam>
+    /// <param name="propertyName">The name of the <see cref="DependencyProperty"/>.</param>
+    /// <param name="propertyType">The type of the <see cref="DependencyProperty"/>.</param>
+    /// <param name="ownerType">THe type of object that will own this property.</param>
+    /// <returns>
+    /// A <see cref="DependencyProperty"/> instance with an attached behavior of the type
+    /// <typeparamref name="TBehavior"/>.
+    /// </returns>
+    public static DependencyProperty Create<TBehavior>(string propertyName, Type propertyType, Type ownerType)
+        where TBehavior : IBehavior, new()
+    {
+        var behavior = new TBehavior();
+
+        return Register(propertyName, propertyType, ownerType, behavior.DefaultMetadata);
+    }
+
     /// <summary>
     /// Creates a <see cref="DependencyProperty"/> instance with an attached behavior that will execute the provided
     /// method upon parameter association.
@@ -35,16 +54,16 @@ public static class DelegateBehaviorFactory
     /// A <see cref="DependencyProperty"/> instance that will execute the <c>associationAction</c> method upon parameter
     /// information association with the object it's attached to.
     /// </returns>
-    public static DependencyProperty Create<TTarget, TParameter>(Action<TTarget, TParameter> associationAction,
-                                                                 string propertyName,
-                                                                 Type ownerType) 
+    public static DependencyProperty CreateDelegate<TTarget, TParameter>(Action<TTarget, TParameter> associationAction,
+                                                                         string propertyName,
+                                                                         Type ownerType) 
         where TTarget : DependencyObject
         where TParameter : class
                                                                                     
     {
         var behavior = new DelegateBehavior<TTarget, TParameter>(associationAction);
 
-        return Register<TParameter>(propertyName, ownerType, behavior.DefaultMetadata);
+        return Register(propertyName, typeof(TParameter), ownerType, behavior.DefaultMetadata);
     }
 
     /// <summary>
@@ -66,23 +85,23 @@ public static class DelegateBehaviorFactory
     /// <c>disassociationAction</c> methods upon parameter information association and disassociation, respectively, with
     /// the object it's attached to.
     /// </returns>
-    public static DependencyProperty Create<TTarget, TParameter>(Action<TTarget, TParameter> associationAction,
-                                                                 Action<TTarget, TParameter> disassociationAction,
-                                                                 string propertyName,
-                                                                 Type ownerType) 
+    public static DependencyProperty CreateDelegate<TTarget, TParameter>(Action<TTarget, TParameter> associationAction,
+                                                                         Action<TTarget, TParameter> disassociationAction,
+                                                                         string propertyName,
+                                                                         Type ownerType) 
         where TTarget : DependencyObject
         where TParameter : class
     {
         var behavior = new DelegateBehavior<TTarget, TParameter>(associationAction, disassociationAction);
 
-        return Register<TParameter>(propertyName, ownerType, behavior.DefaultMetadata);
+        return Register(propertyName, typeof(TParameter), ownerType, behavior.DefaultMetadata);
     }
 
-    private static DependencyProperty Register<TParameter>(string propertyName, Type ownerType, PropertyMetadata propertyMetadata)
+    private static DependencyProperty Register(string propertyName, Type propertyType, Type ownerType, PropertyMetadata propertyMetadata)
     {
         return
             DependencyProperty.RegisterAttached(propertyName,
-                                                typeof(TParameter),
+                                                propertyType,
                                                 ownerType,
                                                 propertyMetadata);
     }

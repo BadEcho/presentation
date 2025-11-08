@@ -24,8 +24,8 @@ namespace BadEcho.Presentation.Behaviors;
 /// </summary>
 /// <typeparam name="TTarget">The type of <see cref="DependencyObject"/> this behavior attaches to.</typeparam>
 /// <typeparam name="TProperty">The type of value accepted by this behavior as an attached property.</typeparam>
-public abstract class Behavior<TTarget,TProperty> : Animatable, IAttachableComponent<TTarget>
-    where TTarget: DependencyObject
+public abstract class Behavior<TTarget, TProperty> : Animatable, IAttachableComponent<TTarget>, IBehavior
+    where TTarget : DependencyObject
     where TProperty : class
 {
     private readonly WeakReference<TTarget> _targetObject
@@ -39,9 +39,7 @@ public abstract class Behavior<TTarget,TProperty> : Animatable, IAttachableCompo
     protected Behavior()
         => DefaultMetadata = new PropertyMetadata(null, OnAttachChanged);
 
-    /// <summary>
-    /// Gets the default property metadata to use when registering this behavior as an attached property.
-    /// </summary>
+    /// <inheritdoc/>
     public PropertyMetadata DefaultMetadata
     { get; }
 
@@ -52,7 +50,7 @@ public abstract class Behavior<TTarget,TProperty> : Animatable, IAttachableCompo
 
         if (TargetObject != null)
             throw new InvalidOperationException(Strings.BehaviorAlreadyAttachedToTarget);
-        
+
         WritePreamble();
         _targetObject.SetTarget(targetObject);
         WritePostscript();
@@ -78,8 +76,7 @@ public abstract class Behavior<TTarget,TProperty> : Animatable, IAttachableCompo
     }
 
     /// <summary>
-    /// Gets a mapping between target dependency objects and associated values while ensuring this <see cref="Freezable"/>
-    /// is being accessed appropriately.
+    /// Gets the associated value while ensuring this <see cref="Freezable"/> is being accessed appropriately.
     /// </summary>
     protected TProperty? AssociatedValue
     {
@@ -153,10 +150,10 @@ public abstract class Behavior<TTarget,TProperty> : Animatable, IAttachableCompo
 
         if (TargetObject != null)
             Detach(targetObject);
-            
+
         Attach(targetObject);
 
         if (newValue != null)
-        AssociateValue(targetObject, newValue);
+            AssociateValue(targetObject, newValue);
     }
 }

@@ -25,14 +25,20 @@ public static class FrameworkBehaviors
     /// event triggers.
     /// </summary>
     public static readonly DependencyProperty EventTriggersProperty
-        = RegisterEventTriggersAttachment();
+        = BehaviorFactory.Create<EventTriggersBehavior>(
+            NameOf.ReadAccessorEnabledDependencyPropertyName(() => EventTriggersProperty),
+            typeof(EventTriggerCollection),
+            typeof(FrameworkBehaviors));
 
     /// <summary>
     /// Identifies the attached property that gets or sets a <see cref="FrameworkElement"/> instance's collection of
     /// property triggers.
     /// </summary>
     public static readonly DependencyProperty TriggersProperty
-        = RegisterTriggersAttachment();
+        = BehaviorFactory.Create<TriggersBehavior>(
+            NameOf.ReadAccessorEnabledDependencyPropertyName(() => TriggersProperty),
+            typeof(TriggerCollection),
+            typeof(FrameworkBehaviors));
 
     /// <summary>
     /// Gets the value of the <see cref="EventTriggersProperty"/> attached property for a given <see cref="FrameworkElement"/>.
@@ -50,28 +56,6 @@ public static class FrameworkBehaviors
     public static TriggerCollection GetTriggers(FrameworkElement source)
         => TriggersBehavior.GetAttachment(source);
     
-    private static DependencyProperty RegisterEventTriggersAttachment()
-    {
-        var behavior = new EventTriggersBehavior();
-
-        return DependencyProperty.RegisterAttached(
-            NameOf.ReadAccessorEnabledDependencyPropertyName(() => EventTriggersProperty),
-            typeof(EventTriggerCollection),
-            typeof(FrameworkBehaviors),
-            behavior.DefaultMetadata);
-    }
-
-    private static DependencyProperty RegisterTriggersAttachment()
-    {
-        var behavior = new TriggersBehavior();
-
-        return DependencyProperty.RegisterAttached(
-            NameOf.ReadAccessorEnabledDependencyPropertyName(() => TriggersProperty),
-            typeof(TriggerCollection),
-            typeof(FrameworkBehaviors),
-            behavior.DefaultMetadata);
-    }
-
     /// <summary>
     /// Provides a compound behavior that hosts a collection of event triggers attached to a target framework-level element.
     /// </summary>
@@ -105,6 +89,7 @@ public static class FrameworkBehaviors
         public static TriggerCollection GetAttachment(FrameworkElement source)
             => GetAttachment(source, TriggersProperty);
 
+        /// <inheritdoc/>
         protected override Freezable CreateInstanceCore() 
             => new TriggersBehavior();
     }

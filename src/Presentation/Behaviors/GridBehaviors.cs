@@ -25,7 +25,7 @@ public static class GridBehaviors
     /// Identifies the attached property that gets or sets the column definitions of a grid.
     /// </summary>
     public static readonly DependencyProperty ColumnDefinitionsProperty
-        = DelegateBehaviorFactory.Create<Grid, SizeDefinitionCollection>(
+        = BehaviorFactory.CreateDelegate<Grid, SizeDefinitionCollection>(
             AssociateColumnDefinitions,
             DisassociateColumnDefinitions,
             NameOf.ReadDependencyPropertyName(() => ColumnDefinitionsProperty),
@@ -35,7 +35,7 @@ public static class GridBehaviors
     /// Identifies the attached property that gets or sets the row definitions of a grid.
     /// </summary>
     public static readonly DependencyProperty RowDefinitionsProperty
-        = DelegateBehaviorFactory.Create<Grid, SizeDefinitionCollection>(
+        = BehaviorFactory.CreateDelegate<Grid, SizeDefinitionCollection>(
             AssociateRowDefinitions,
             DisassociateRowDefinitions,
             NameOf.ReadDependencyPropertyName(() => RowDefinitionsProperty),
