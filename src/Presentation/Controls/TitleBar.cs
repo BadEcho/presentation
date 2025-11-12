@@ -16,8 +16,8 @@ using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interop;
 using BadEcho.Interop;
+using BadEcho.Presentation.Extensions;
 using BadEcho.Presentation.Properties;
 using BadEcho.Presentation.Windows;
 using Microsoft.Win32;
@@ -272,7 +272,7 @@ public sealed class TitleBar : ContentControl
 
         SystemEvents.UserPreferenceChanged += HandleUserPreferenceChanged;
 
-        IntPtr handle = new WindowInteropHelper(host).Handle;
+        IntPtr handle = host.GetHandle();
 
         _native = new NativeWindow(new PresentationWindowWrapper(handle));
 
@@ -296,10 +296,8 @@ public sealed class TitleBar : ContentControl
 
     private void HandleHostActivated(object? sender, EventArgs e)
     {
-        Window? host = (Window?)sender;
-
-        if (host == null)
-            throw new InvalidOperationException(Strings.WindowEventNoEventSender);
+        Window host = (Window?) sender
+                      ?? throw new InvalidOperationException(Strings.WindowEventNoEventSender);
 
         UpdateHost(host);
     }

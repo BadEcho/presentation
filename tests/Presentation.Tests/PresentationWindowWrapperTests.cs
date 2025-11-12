@@ -11,9 +11,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using System.Windows.Interop;
 using System.Windows.Threading;
 using BadEcho.Interop;
+using BadEcho.Presentation.Extensions;
 using BadEcho.Presentation.Windows;
 using Xunit;
 using Window = System.Windows.Window;
@@ -34,9 +34,8 @@ public class PresentationWindowWrapperTests
                 window = new Window();
                 window.Show();
                 Assert.NotNull(window);
-                var helper = new WindowInteropHelper(window);
-
-                var wrapper = new PresentationWindowWrapper(helper.Handle);
+                
+                var wrapper = new PresentationWindowWrapper(window.GetHandle());
 
                 wrapper.AddCallback(Callback);
         
