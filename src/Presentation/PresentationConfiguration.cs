@@ -28,7 +28,7 @@ public sealed class PresentationConfiguration
     /// A monitor's index corresponds to where the monitor is in the arrangement defined in the user's display settings, with
     /// the lowest index being the leftmost monitor and the highest index being the rightmost.
     /// </remarks>
-    public int LaunchDisplay
+    public int? LaunchDisplay
     { get; init; }
 
     /// <summary>

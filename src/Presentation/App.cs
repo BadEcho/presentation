@@ -181,7 +181,10 @@ internal sealed class App
 
     private static void ApplyDisplayConfiguration(PresentationConfiguration configuration, Window mainWindow)
     {
-        Display launchDisplay = Display.Devices.Skip(configuration.LaunchDisplay)
+        if (!configuration.LaunchDisplay.HasValue)
+            return;
+
+        Display launchDisplay = Display.Devices.Skip(configuration.LaunchDisplay.Value)
                                        .First();
 
         mainWindow.MoveToDisplay(launchDisplay);
