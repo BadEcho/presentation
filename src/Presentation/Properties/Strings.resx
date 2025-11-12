@@ -170,8 +170,8 @@
   <data name="BindingActionError" xml:space="preserve">
     <value>An error occurred during a data binding action.</value>
   </data>
-  <data name="JsonThicknessInvalidThickness" xml:space="preserve">
-    <value>A Thickness value with an illegal number of lengths was provided. A Thickness value can only have 1, 2, or 4 lengths.</value>
+  <data name="JsonThicknessInvalidValue" xml:space="preserve">
+    <value>The provided JSON value is an invalid representation of a Thickness. A Thickness value is a delimited string describing either 1, 2, or 4 lengths.</value>
   </data>
   <data name="ModelImplementationAlreadyRegistered" xml:space="preserve">
     <value>The {0} type is already registered as a derived model type with this collection view model.</value>
@@ -223,5 +223,8 @@
 	</data>
 	<data name="NonClientNotAssociatedWithControl" xml:space="preserve">
 		<value>Behavior needs to be associated with a control.</value>
+	</data>
+	<data name="JsonRectInvalidValue" xml:space="preserve">
+		<value>The provided JSON value is an invalid representation of a Rect. A Rect value is a delimited string describing four sides.</value>
 	</data>
 </root>

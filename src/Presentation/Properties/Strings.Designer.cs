@@ -277,11 +277,20 @@ namespace BadEcho.Presentation.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to A Thickness value with an illegal number of lengths was provided. A Thickness value can only have 1, 2, or 4 lengths..
+        ///   Looks up a localized string similar to The provided JSON value is an invalid representation of a Rect. A Rect value is a delimited string describing four sides..
         /// </summary>
-        internal static string JsonThicknessInvalidThickness {
+        internal static string JsonRectInvalidValue {
             get {
-                return ResourceManager.GetString("JsonThicknessInvalidThickness", resourceCulture);
+                return ResourceManager.GetString("JsonRectInvalidValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The provided JSON value is an invalid representation of a Thickness. A Thickness value is a delimited string describing either 1, 2, or 4 lengths..
+        /// </summary>
+        internal static string JsonThicknessInvalidValue {
+            get {
+                return ResourceManager.GetString("JsonThicknessInvalidValue", resourceCulture);
             }
         }
         

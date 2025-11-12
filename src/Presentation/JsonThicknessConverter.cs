@@ -27,6 +27,9 @@ public sealed class JsonThicknessConverter : JsonConverter<Thickness>
     /// <inheritdoc/>
     public override Thickness Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        if (reader.TokenType != JsonTokenType.String)
+            throw new JsonException(Strings.JsonThicknessInvalidValue);
+
         string thickness = reader.GetString() ?? string.Empty;
 
         double[] lengths = ParseLengths(thickness);
@@ -73,7 +76,7 @@ public sealed class JsonThicknessConverter : JsonConverter<Thickness>
                 double.Parse(values[2], CultureInfo.InvariantCulture),
                 double.Parse(values[3], CultureInfo.InvariantCulture)
             ],
-            _ => throw new JsonException(Strings.JsonThicknessInvalidThickness)
+            _ => throw new JsonException(Strings.JsonThicknessInvalidValue)
         };
     }
 }
