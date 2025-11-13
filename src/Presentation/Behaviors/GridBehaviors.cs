@@ -40,7 +40,16 @@ public static class GridBehaviors
             DisassociateRowDefinitions,
             NameOf.ReadDependencyPropertyName(() => RowDefinitionsProperty),
             typeof(GridBehaviors));
-
+    
+    /// <summary>
+    /// Identifies the attached property that gets or sets the automated compaction of a grid.
+    /// </summary>
+    public static readonly DependencyProperty CompactionProperty
+        = BehaviorFactory.Create<CompactionBehavior>(
+            NameOf.ReadAccessorEnabledDependencyPropertyName(() => CompactionProperty),
+            typeof(GridCompactor),
+            typeof(GridBehaviors));
+    
     /// <summary>
     /// Gets the value of the <see cref="ColumnDefinitionsProperty"/> attached property for a given <see cref="Grid"/>.
     /// </summary>
@@ -58,7 +67,7 @@ public static class GridBehaviors
     /// </summary>
     /// <param name="source">The grid to which the attached property is written.</param>
     /// <param name="collection">The collection of column size definitions to set.</param>
-    public static void SetColumnDefinitions(Grid source, SizeDefinitionCollection collection)
+    public static void SetColumnDefinitions(Grid source, SizeDefinitionCollection? collection)
     {
         Require.NotNull(source, nameof(source));
 
@@ -82,11 +91,35 @@ public static class GridBehaviors
     /// </summary>
     /// <param name="source">The grid to which the attached property is written.</param>
     /// <param name="collection">The collection of row size definitions to set.</param>
-    public static void SetRowDefinitions(Grid source, SizeDefinitionCollection collection)
+    public static void SetRowDefinitions(Grid source, SizeDefinitionCollection? collection)
     {
         Require.NotNull(source, nameof(source));
 
         source.SetValue(RowDefinitionsProperty, collection);
+    }
+
+    /// <summary>
+    /// Gets the value of the <see cref="CompactionProperty"/> attached property for a given <see cref="Grid"/>.
+    /// </summary>
+    /// <param name="source">The grid from which the property value is read.</param>
+    /// <returns>The compaction behavior for <c>source</c>.</returns>
+    public static GridCompactor GetCompaction(Grid source)
+    {
+        Require.NotNull(source, nameof(source));
+
+        return CompactionBehavior.GetAttachment(source);
+    }
+
+    /// <summary>
+    /// Sets the value of the <see cref="CompactionProperty"/> attached property on a given <see cref="Grid"/>.
+    /// </summary>
+    /// <param name="source">The grid to which the attached property is written.</param>
+    /// <param name="compactor">The compactor to set.</param>
+    public static void SetCompaction(Grid source, GridCompactor compactor)
+    {
+        Require.NotNull(source, nameof(source));
+
+        source.SetValue(CompactionProperty, compactor);
     }
 
     private static void AssociateColumnDefinitions(Grid target, SizeDefinitionCollection collection)
@@ -120,4 +153,23 @@ public static class GridBehaviors
         
     private static void DisassociateRowDefinitions(Grid target, SizeDefinitionCollection? collection) 
         => target.RowDefinitions.Clear();
+
+    /// <summary>
+    /// Provides a compound behavior that makes the layout of a grid responsive to its parent container.
+    /// </summary>
+    private sealed class CompactionBehavior : CompoundBehavior<Grid, GridCompactor>
+    {
+        /// <summary>
+        /// Gets the value of the <see cref="GridBehaviors.CompactionProperty"/> attached property for a given
+        /// <see cref="Grid"/>.
+        /// </summary>
+        /// <param name="source">The grid from which the property value is read.</param>
+        /// <returns>The compactor attached to <c>source</c>.</returns>
+        public static GridCompactor GetAttachment(Grid source) 
+            => GetAttachment(source, CompactionProperty);
+
+        /// <inheritdoc/>
+        protected override Freezable CreateInstanceCore() 
+            => new CompactionBehavior();
+    }
 }
