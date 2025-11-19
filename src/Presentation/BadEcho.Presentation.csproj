@@ -6,7 +6,7 @@
 		<Product>$(Title)</Product>
 		<Description>Bad Echo user interface framework for Windows Presentation Foundation.</Description>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<TargetFramework>net9.0-windows</TargetFramework>
+		<TargetFramework>net10.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
 		<IsPackable>$(PresentationIsPackable)</IsPackable>
 	</PropertyGroup>
