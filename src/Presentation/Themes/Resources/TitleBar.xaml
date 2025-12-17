@@ -7,23 +7,24 @@
     See accompanying file LICENSE.md or a copy at:
     https://www.gnu.org/licenses/agpl-3.0.html-->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                        xmlns:ctrl="clr-namespace:BadEcho.Presentation.Controls">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:ctrl="clr-namespace:BadEcho.Presentation.Controls"
+                    >
     <Style TargetType="ctrl:TitleBar">
         <Style.Resources>
-            <BooleanToVisibilityConverter x:Key="BooleanVisibilityConverter"/>
+            <BooleanToVisibilityConverter x:Key="BooleanVisibilityConverter" />
             <Style x:Key="TitleBarButtonStyle" TargetType="Button">
-                <Setter Property="MinWidth" Value="48"/>
-                <Setter Property="MinHeight" Value="32"/>
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderBrush" Value="Transparent"/>
-                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-                <Setter Property="VerticalAlignment" Value="Top"/>
-                <Setter Property="Focusable" Value="False"/>
-                <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True"/>
+                <Setter Property="MinWidth" Value="48" />
+                <Setter Property="MinHeight" Value="32" />
+                <Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                <Setter Property="VerticalAlignment" Value="Top" />
+                <Setter Property="Focusable" Value="False" />
+                <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
                 <!--
-                We need to replace the default ControlTemplate in order to remove the box that appears when clicking the button,
-                as well as the "depression" effect.
+                    We need to replace the default ControlTemplate in order to remove the box that appears when clicking the button,
+                    as well as the "depression" effect.
                 -->
                 <Setter Property="Template">
                     <Setter.Value>
@@ -31,11 +32,12 @@
                             <Border Background="{TemplateBinding Background}"
                                     BorderBrush="{TemplateBinding BorderBrush}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
-                                    SnapsToDevicePixels="True">
-                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                  RecognizesAccessKey="True"
+                                    SnapsToDevicePixels="True"
+                                    >
+                                <ContentPresenter RecognizesAccessKey="True"
                                                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                                  VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                   />
                             </Border>
                         </ControlTemplate>
@@ -54,46 +56,51 @@
                 <ControlTemplate TargetType="ctrl:TitleBar">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <DockPanel x:Name="PART_MainPanel"
-                                   HorizontalAlignment="Left"
                                    KeyboardNavigation.TabNavigation="None"
-                                   Height="32"
                                    LastChildFill="True"
-                                   Grid.Column="0">
+                                   Height="32"
+                                   HorizontalAlignment="Left"
+                                   Grid.Column="0"
+                                   >
                             <!--
-                            The glyphs used for the button icons are mapped to a Unicode PUA (Private Use Area) range used by the active symbol icon font.
-                            A partial list can be found here (specifically for the Segoe Fluent Icons font):
-                            https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-fluent-icons-font                        
+                                The glyphs used for the button icons are mapped to a Unicode PUA (Private Use Area) range used by the active symbol icon font.
+                                A partial list can be found here (specifically for the Segoe Fluent Icons font):
+                                https://learn.microsoft.com/en-us/windows/apps/design/style/segoe-fluent-icons-font
                             -->
-                            <StackPanel x:Name="PART_NavigationPanel" 
-                                        Visibility="{TemplateBinding IsNavigationVisible, Converter={StaticResource BooleanVisibilityConverter}}"
-                                        Orientation="Horizontal">
-                                <Button Command="{TemplateBinding BackCommand}"
+                            <StackPanel x:Name="PART_NavigationPanel"
+                                        Orientation="Horizontal"
+                                        Visibility="{TemplateBinding IsNavigationVisible,
+                                                                     Converter={StaticResource BooleanVisibilityConverter}}"
+                                        >
+                                <Button Background="Transparent"
+                                        BorderBrush="Transparent"
+                                        Command="{TemplateBinding BackCommand}"
                                         IsEnabled="{TemplateBinding CanGoBack}"
-                                        Background="Transparent"
-                                        BorderBrush="Transparent" 
-                                        WindowChrome.IsHitTestVisibleInChrome="True"
                                         ToolTipService.ToolTip="Back"
-                                        Height="32"
+                                        WindowChrome.IsHitTestVisibleInChrome="True"
                                         Width="40"
+                                        Height="32"
+                                        Margin="4,0"
                                         VerticalAlignment="Center"
-                                        Margin="4,0">
+                                        >
                                     <Button.Resources>
                                         <SolidColorBrush x:Key="ButtonBackgroundDisabled" Color="Transparent" />
                                         <SolidColorBrush x:Key="ButtonBorderBrushDisabled" Color="Transparent" />
                                     </Button.Resources>
                                     <TextBlock FontFamily="{DynamicResource SymbolThemeFontFamily}"
-                                           FontSize="12"
-                                           Text="&#xE72B;"
-                                           VerticalAlignment="Center">
+                                               FontSize="12"
+                                               Text="&#xE72B;"
+                                               VerticalAlignment="Center"
+                                               >
                                         <TextBlock.Style>
                                             <Style TargetType="TextBlock">
                                                 <Style.Triggers>
                                                     <Trigger Property="IsEnabled" Value="False">
-                                                        <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}"/>
+                                                        <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                                                     </Trigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -101,27 +108,30 @@
                                     </TextBlock>
                                 </Button>
                             </StackPanel>
-                            <ContentPresenter x:Name="PART_ContentPresenter" 
-                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
-                                              Content="{TemplateBinding Content}" 
-                                              ContentTemplate="{TemplateBinding ContentTemplate}" 
-                                              TextElement.Foreground="{TemplateBinding Foreground}" 
+                            <ContentPresenter x:Name="PART_ContentPresenter"
+                                              Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}"
+                                              TextElement.Foreground="{TemplateBinding Foreground}"
+                                              HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                               />
                         </DockPanel>
-                        <StackPanel x:Name="PART_HighContrastPanel" 
+                        <StackPanel x:Name="PART_HighContrastPanel"
                                     Orientation="Horizontal"
-                                    Grid.Column="1">
-                            <Button x:Name="PART_MinimizeButton" 
-                                    Style="{StaticResource TitleBarButtonStyle}">
+                                    Grid.Column="1"
+                                    >
+                            <Button x:Name="PART_MinimizeButton"
+                                    Style="{StaticResource TitleBarButtonStyle}"
+                                    >
                                 <TextBlock FontFamily="{DynamicResource SymbolThemeFontFamily}"
                                            FontSize="10"
                                            Text="&#xE921;"
                                            VerticalAlignment="Center"
                                            />
                             </Button>
-                            <Button x:Name="PART_MaximizeButton" 
-                                    Style="{StaticResource TitleBarButtonStyle}">
+                            <Button x:Name="PART_MaximizeButton"
+                                    Style="{StaticResource TitleBarButtonStyle}"
+                                    >
                                 <TextBlock x:Name="PART_MaximizeButtonIcon"
                                            FontFamily="{DynamicResource SymbolThemeFontFamily}"
                                            FontSize="10"
@@ -130,10 +140,11 @@
                                            />
                             </Button>
                             <Button x:Name="PART_CloseButton"
-                                    Style="{StaticResource TitleBarButtonStyle}">
+                                    Style="{StaticResource TitleBarButtonStyle}"
+                                    >
                                 <TextBlock FontFamily="{DynamicResource SymbolThemeFontFamily}"
                                            FontSize="14"
-                                           Text="&#xE711;" 
+                                           Text="&#xE711;"
                                            VerticalAlignment="Center"
                                            />
                             </Button>
