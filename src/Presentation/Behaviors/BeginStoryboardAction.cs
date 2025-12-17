@@ -123,7 +123,7 @@ public sealed class BeginStoryboardAction : BehaviorAction
     /// action-triggering behavior to the outside object with a storyboard only targeting those properties.
     /// </para>
     /// </remarks>
-    public override bool Execute()
+    public override bool Execute(object? parameter)
     {
         if (_activeStoryboard == null)
             return false;

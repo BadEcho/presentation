@@ -23,6 +23,7 @@ public abstract class BehaviorAction : AttachableComponent<DependencyObject>
     /// <summary>
     /// Executes the action.
     /// </summary>
+    /// <param name="parameter">An optional parameter provided to the action.</param>
     /// <returns>Value indicating the success of the action's execution.</returns>
-    public abstract bool Execute();
+    public abstract bool Execute(object? parameter);
 }

@@ -94,5 +94,5 @@ public sealed class EventTrigger : ActionSource<EventTrigger>
     }
 
     private void OnEvent(object sender, RoutedEventArgs e)
-        => ExecuteActions();
+        => ExecuteActions(e);
 }

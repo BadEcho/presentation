@@ -55,15 +55,18 @@ public sealed class CommandAction : BehaviorAction
     }
 
     /// <inheritdoc/>
-    public override bool Execute()
+    public override bool Execute(object? parameter)
     {
         if (Command == null)
             return false;
 
-        if (!Command.CanExecute(Parameter))
+        if (Parameter != null)
+            parameter = Parameter;
+
+        if (!Command.CanExecute(parameter))
             return false;
 
-        Command.Execute(Parameter);
+        Command.Execute(parameter);
 
         return true;
     }

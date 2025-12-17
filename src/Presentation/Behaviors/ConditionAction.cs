@@ -39,7 +39,7 @@ public sealed class ConditionAction : BehaviorAction
     }
 
     /// <inheritdoc/>
-    public override bool Execute() 
+    public override bool Execute(object? parameter)
         => IsEnabled;
 
     /// <inheritdoc/>

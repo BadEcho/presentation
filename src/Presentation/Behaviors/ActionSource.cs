@@ -85,11 +85,12 @@ public abstract class ActionSource<T> : AttachableComponent<UIElement>
     /// <summary>
     /// Executes the attached actions.
     /// </summary>
-    protected void ExecuteActions()
+    /// <param name="parameter">An optional parameter to provide to the actions.</param>
+    protected void ExecuteActions(object? parameter = null)
     {
         foreach (BehaviorAction action in Actions)
         {
-            if (!action.Execute())
+            if (!action.Execute(parameter))
                 return;
         }
     }

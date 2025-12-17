@@ -25,7 +25,7 @@ public sealed class BehaviorActionCollection : AttachableComponentCollection<Dep
     /// </summary>
     /// <returns>True if all actions executed successfully; otherwise, false.</returns>
     public bool ExecuteActions() 
-        => this.All(action => action.Execute());
+        => this.All(action => action.Execute(null));
 
     /// <inheritdoc/>
     protected override Freezable CreateInstanceCore() 

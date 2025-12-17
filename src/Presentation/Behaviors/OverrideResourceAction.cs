@@ -39,7 +39,7 @@ public sealed class OverrideResourceAction : BehaviorAction
     { get; set; }
 
     /// <inheritdoc/>
-    public override bool Execute()
+    public override bool Execute(object? parameter)
     {
         if (TargetObject is not FrameworkElement element)
             return false;

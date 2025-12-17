@@ -65,7 +65,7 @@ public sealed class PlaySoundAction : BehaviorAction
     /// The actual method that plays the sound is fired off in an asynchronous task, as we don't want the playback
     /// to block the UI thread, which this action will most definitely be running on.
     /// </remarks>
-    public override bool Execute()
+    public override bool Execute(object? parameter)
     {
         // The runtime will throw a runtime error due to thread ownership issues if we don't copy the byte array from the
         // dependency property here.
