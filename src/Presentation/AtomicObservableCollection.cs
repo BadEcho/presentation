@@ -335,7 +335,9 @@ public sealed class AtomicObservableCollection<T> : ObservableCollection<T>, IHa
         void OnCollectionReset()
         {   // The new and old item collections normally aren't set when a Reset occurs, which can complicate
             // matters such as managing event subscriptions, etc. So, we're going against the grain here...
-            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset,
+                                                                     newItems ?? [],
+                                                                     oldItems ?? []));
         }
     }
 
