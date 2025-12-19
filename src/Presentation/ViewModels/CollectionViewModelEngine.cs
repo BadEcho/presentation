@@ -16,6 +16,7 @@ using BadEcho.Extensions;
 using BadEcho.Logging;
 using BadEcho.Presentation.Properties;
 using System.Collections.Concurrent;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Threading;
 
@@ -69,7 +70,7 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
         Require.NotNull(changeStrategy, nameof(changeStrategy));
         Require.NotNull(options, nameof(options));
 
-        if (options.ItemsChangedHandler == null)
+        if (options.CollectionChangedHandler == null)
             throw new ArgumentException(Strings.CollectionViewModelEngineRequiresHandler, nameof(options));
             
         _viewModel = viewModel;
@@ -86,7 +87,7 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
 
         var collectionChangePublisher = new CollectionPropertyChangePublisher<TChildViewModel>(Items);
 
-        collectionChangePublisher.Changed += options.ItemsChangedHandler + HandleItemsChanged;
+        collectionChangePublisher.CollectionChanged += options.CollectionChangedHandler + HandleCollectionChanged;
     }
 
     /// <summary>
@@ -541,32 +542,38 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
         }
     }
 
-    private void HandleItemsChanged(object? sender, CollectionPropertyChangedEventArgs e)
+    private void HandleCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (DesignerProperties.GetIsInDesignMode(new System.Windows.DependencyObject()))
             return;
 
-        foreach (TChildViewModel childViewModel in e.OldItems)
+        if (e.OldItems != null)
         {
-            if (childViewModel.ActiveModel == null)
-                throw new InvalidOperationException(Strings.CollectionChildUnbindingRequiresActiveModel);
+            foreach (TChildViewModel childViewModel in e.OldItems)
+            {
+                if (childViewModel.ActiveModel == null)
+                    throw new InvalidOperationException(Strings.CollectionChildUnbindingRequiresActiveModel);
 
-            _viewModel.Unbind(childViewModel.ActiveModel);
+                _viewModel.Unbind(childViewModel.ActiveModel);
+            }
         }
 
-        foreach (TChildViewModel childViewModel in e.NewItems)
+        if (e.NewItems != null)
         {
-            if (childViewModel.ActiveModel == null)
-                throw new InvalidOperationException(Strings.CollectionChildBindingRequiresActiveModel);
-
-            lock (_processedModelsLock)
+            foreach (TChildViewModel childViewModel in e.NewItems)
             {
-                if (!_processedModels.Contains(childViewModel.ActiveModel))
-                    _processedModels.Add(childViewModel.ActiveModel);
-            }
+                if (childViewModel.ActiveModel == null)
+                    throw new InvalidOperationException(Strings.CollectionChildBindingRequiresActiveModel);
 
-            if (_options.BindItems)
-                _viewModel.Bind(childViewModel.ActiveModel);
+                lock (_processedModelsLock)
+                {
+                    if (!_processedModels.Contains(childViewModel.ActiveModel))
+                        _processedModels.Add(childViewModel.ActiveModel);
+                }
+
+                if (_options.BindItems)
+                    _viewModel.Bind(childViewModel.ActiveModel);
+            }
         }
     }
 

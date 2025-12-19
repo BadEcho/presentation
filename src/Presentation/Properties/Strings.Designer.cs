@@ -19,7 +19,7 @@ namespace BadEcho.Presentation.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Strings {
@@ -178,7 +178,7 @@ namespace BadEcho.Presentation.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The collection view model engine requires a valid collection property change handler to be specified in the provided options..
+        ///   Looks up a localized string similar to The collection view model engine requires a valid collection change handler to be specified in the provided options..
         /// </summary>
         internal static string CollectionViewModelEngineRequiresHandler {
             get {

@@ -11,7 +11,8 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using BadEcho.Collections;
+using System.Collections.Specialized;
+using System.ComponentModel;
 
 namespace BadEcho.Presentation.ViewModels;
 
@@ -107,9 +108,14 @@ public sealed class CollectionViewModelOptions
     { get; set; }
 
     /// <summary>
-    /// Gets or sets the method meant to handle changes in either the children collection's composition or property values of items
-    /// belonging to said collection.
+    /// Gets or sets the method meant to handle changes to the children collection's composition.
     /// </summary>
-    public EventHandler<CollectionPropertyChangedEventArgs>? ItemsChangedHandler 
+    public EventHandler<NotifyCollectionChangedEventArgs>? CollectionChangedHandler 
+    { get; set; }
+
+    /// <summary>
+    ///  Gets or sets the method meant to handle changes in property values of items belonging to the children collection.
+    /// </summary>
+    public EventHandler<PropertyChangedEventArgs>? ItemChangedHandler
     { get; set; }
 }

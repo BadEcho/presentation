@@ -11,8 +11,9 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Windows.Threading;
-using BadEcho.Collections;
 
 namespace BadEcho.Presentation.ViewModels;
 
@@ -53,7 +54,8 @@ public abstract class CollectionViewModel<TModel, TChildViewModel> : ViewModel<T
     {
         Require.NotNull(options, nameof(options));
 
-        options.ItemsChangedHandler = HandleItemsChanged;
+        options.CollectionChangedHandler = HandleCollectionChanged;
+        options.ItemChangedHandler = HandleItemChanged;
         
         _engine = new CollectionViewModelEngine<TModel, TChildViewModel>(this, changeStrategy, options);
     }
@@ -108,12 +110,23 @@ public abstract class CollectionViewModel<TModel, TChildViewModel> : ViewModel<T
         => _engine.Unbind(models);
 
     /// <summary>
-    /// Called when there is a change to either the collection's composition or a property value of one of this view model's children.
+    /// Called when there is a change to the collection's composition.
     /// </summary>
-    /// <param name="e">The <see cref="CollectionPropertyChangedEventArgs"/> instance containing the event data.</param>
-    protected virtual void OnItemsChanged(CollectionPropertyChangedEventArgs e)
+    /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
+    protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
     { }
 
-    private void HandleItemsChanged(object? sender, CollectionPropertyChangedEventArgs e) 
-        => OnItemsChanged(e);
+    /// <summary>
+    /// Called when there is a change to a property value of one of this view model's children.
+    /// </summary>
+    /// <param name="child">The child view model that had a change in a property value.</param>
+    /// <param name="e">The <see cref="PropertyChangedEventArgs"/> instance containing the event data.</param>
+    protected virtual void OnItemChanged(TChildViewModel? child, PropertyChangedEventArgs e)
+    { }
+
+    private void HandleCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        => OnCollectionChanged(e);
+
+    private void HandleItemChanged(object? sender, PropertyChangedEventArgs e) 
+        => OnItemChanged((TChildViewModel?) sender, e);
 }
