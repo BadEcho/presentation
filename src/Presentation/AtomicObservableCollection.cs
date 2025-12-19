@@ -124,7 +124,7 @@ public sealed class AtomicObservableCollection<T> : ObservableCollection<T>, IHa
                 return;
 
             if (newItems > 0)
-                NotifyReset();
+                NotifyReset(itemsList, null);
         }
     }
 
@@ -160,7 +160,7 @@ public sealed class AtomicObservableCollection<T> : ObservableCollection<T>, IHa
                 return;
 
             if (removedItems > 0)
-                NotifyReset();
+                NotifyReset(null, itemsList);
         }
     }
 
@@ -317,15 +317,15 @@ public sealed class AtomicObservableCollection<T> : ObservableCollection<T>, IHa
 
     private void CommitSort(IEnumerable<T> sortedItems)
     {
-        // Apparently base virtual method calls in lambda expressions no longer produces unverifiable code.
+        // Apparently base virtual method calls in lambda expressions no longer produces unverifiable code. Wowee!
         this.BypassHandlers(Clear);
 
         AddSilently(sortedItems);
 
-        NotifyReset();
+        NotifyReset(null, null);
     }
 
-    private void NotifyReset()
+    private void NotifyReset(List<T>? newItems, List<T>? oldItems)
     {
         if (!IsDispatcherRequired)
             OnCollectionReset();
@@ -333,7 +333,8 @@ public sealed class AtomicObservableCollection<T> : ObservableCollection<T>, IHa
             _dispatcher.Invoke(OnCollectionReset, DispatcherPriority.Send);
 
         void OnCollectionReset()
-        {
+        {   // The new and old item collections normally aren't set when a Reset occurs, which can complicate
+            // matters such as managing event subscriptions, etc. So, we're going against the grain here...
             OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
     }
