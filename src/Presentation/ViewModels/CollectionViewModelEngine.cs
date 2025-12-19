@@ -88,6 +88,7 @@ internal sealed class CollectionViewModelEngine<TModel, TChildViewModel> : ViewM
         var collectionChangePublisher = new CollectionPropertyChangePublisher<TChildViewModel>(Items);
 
         collectionChangePublisher.CollectionChanged += options.CollectionChangedHandler + HandleCollectionChanged;
+        collectionChangePublisher.ItemChanged += options.ItemChangedHandler;
     }
 
     /// <summary>
