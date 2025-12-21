@@ -165,7 +165,7 @@ internal sealed class App
     /// </summary>
     private static void OnTextBoxGotKeyboardFocus(object sender, RoutedEventArgs e)
     {
-        TextBox textBox = (TextBox)e.OriginalSource;
+        TextBox textBox = (TextBox)e.Source;
 
         try
         {
