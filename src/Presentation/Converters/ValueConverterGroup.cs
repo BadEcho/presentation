@@ -28,7 +28,7 @@ public sealed class ValueConverterGroup : IValueConverter
     /// <summary>
     /// Gets the chained <see cref="IValueConverter"/> instances used during the conversion process.
     /// </summary>
-    public ICollection<IValueConverter> Converters
+    public Collection<IValueConverter> Converters
     { get; } = [];
 
     /// <inheritdoc/>
