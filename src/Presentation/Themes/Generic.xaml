@@ -8,6 +8,6 @@
     https://www.gnu.org/licenses/agpl-3.0.html-->
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/BadEcho.Presentation;component/Themes/Root.xaml"/>
+        <ResourceDictionary Source="/BadEcho.Presentation;component/Themes/Root.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

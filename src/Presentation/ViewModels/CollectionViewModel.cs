@@ -14,6 +14,7 @@
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows.Threading;
+using BadEcho.Extensions;
 
 namespace BadEcho.Presentation.ViewModels;
 
@@ -65,6 +66,13 @@ public abstract class CollectionViewModel<TModel, TChildViewModel> : ViewModel<T
         => _engine.Items;
 
     /// <inheritdoc/>
+    public bool HasItems
+    {
+        get;
+        set => NotifyIfChanged(ref field, value);
+    }
+
+    /// <inheritdoc/>
     public void Bind(TChildViewModel viewModel) 
         => _engine.Bind(viewModel);
 
@@ -113,8 +121,8 @@ public abstract class CollectionViewModel<TModel, TChildViewModel> : ViewModel<T
     /// Called when there is a change to the collection's composition.
     /// </summary>
     /// <param name="e">The <see cref="NotifyCollectionChangedEventArgs"/> instance containing the event data.</param>
-    protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-    { }
+    protected virtual void OnCollectionChanged(NotifyCollectionChangedEventArgs e) 
+        => HasItems = !Items.IsEmpty();
 
     /// <summary>
     /// Called when there is a change to a property value of one of this view model's children.

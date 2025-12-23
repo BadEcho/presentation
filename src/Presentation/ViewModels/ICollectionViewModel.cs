@@ -28,6 +28,11 @@ public interface ICollectionViewModel<TModel, TChildViewModel> : IViewModel<TMod
     where TChildViewModel : class, IViewModel, IModelProvider<TModel>
 {
     /// <summary>
+    /// Gets or sets a value indicating if this collection view model contains any children.
+    /// </summary>
+    bool HasItems { get; set; }
+
+    /// <summary>
     /// Binds the provided view model to this collection view model, allowing for the child's bound data to be represented
     /// in a view.
     /// </summary>
