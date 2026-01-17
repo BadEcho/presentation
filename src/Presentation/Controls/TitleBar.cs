@@ -223,11 +223,9 @@ public sealed class TitleBar : ContentControl
 
     private void UpdateHost(Window host)
     {
-        if (_mainPanel != null) 
-            _mainPanel.Margin = host.WindowState == WindowState.Maximized ? new Thickness(6, 6, 6, 0) : default;
+        _mainPanel?.Margin = host.WindowState == WindowState.Maximized ? new Thickness(6, 6, 6, 0) : default;
 
-        if (_highContrastPanel != null) 
-            _highContrastPanel.Visibility = SystemParameters.HighContrast ? Visibility.Visible : Visibility.Collapsed;
+        _highContrastPanel?.Visibility = SystemParameters.HighContrast ? Visibility.Visible : Visibility.Collapsed;
 
         SetContentWidth();
     }
@@ -324,8 +322,7 @@ public sealed class TitleBar : ContentControl
     {
         Window? host = Window.GetWindow(this);
 
-        if (host != null)
-            host.WindowState = WindowState.Minimized;
+        host?.WindowState = WindowState.Minimized;
     }
 
     private void HandleMaximizeClick(object sender, RoutedEventArgs e)
@@ -339,21 +336,17 @@ public sealed class TitleBar : ContentControl
         {
             host.WindowState = WindowState.Normal;
 
-            if (_mainPanel != null)
-                _mainPanel.Margin = default;
+            _mainPanel?.Margin = default;
 
-            if (_maximizeButtonIcon != null)
-                _maximizeButtonIcon.Text = "\uE922";
+            _maximizeButtonIcon?.Text = "\uE922";
         }
         else
         {
             host.WindowState = WindowState.Maximized;
 
-            if (_mainPanel != null)
-                _mainPanel.Margin = new Thickness(6,6,6,0);
+            _mainPanel?.Margin = new Thickness(6,6,6,0);
 
-            if (_maximizeButtonIcon != null)
-                _maximizeButtonIcon.Text = "\uE923";
+            _maximizeButtonIcon?.Text = "\uE923";
         }
     }
 
