@@ -28,8 +28,6 @@ public sealed class PresentationWindowWrapper : WindowWrapper
 {
     private readonly HwndSource _source;
 
-    private bool _sourceHooked;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="PresentationWindowWrapper"/> class.
     /// </summary>
@@ -43,31 +41,16 @@ public sealed class PresentationWindowWrapper : WindowWrapper
             ?? throw new ArgumentException(Strings.WindowNotPresentation, nameof(handle));
 
         Handle = source.GetSafeHandle();
-    }
-
-    /// <inheritdoc/>
-    protected override void OnCallbackAdded(WindowProcedure addedCallback)
-    {
-        base.OnCallbackAdded(addedCallback);
-
-        if (_sourceHooked)
-            return;
 
         _source.AddHook(SourceHook);
-
-        _sourceHooked = true;
     }
 
     /// <inheritdoc/>
     protected override void OnDestroyingWindow()
     {
         base.OnDestroyingWindow();
-
-        if (!_sourceHooked)
-            return;
-        
+    
         _source.RemoveHook(SourceHook);
-        _sourceHooked = false;
     }
 
     private IntPtr SourceHook(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
