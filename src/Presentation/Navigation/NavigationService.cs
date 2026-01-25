@@ -47,13 +47,13 @@ public sealed class NavigationService
     /// Gets a value indicating if there are entries in back navigation history that can be navigated to.
     /// </summary>
     public bool CanNavigateBack
-        => _back.Count == 0;
+        => _back.Count != 0;
 
     /// <summary>
     /// Gets a value indicating if there are entries in forward navigation history that can be navigated to.
     /// </summary>
     public bool CanNavigateForward
-        => _forward.Count == 0;
+        => _forward.Count != 0;
 
     /// <summary>
     /// Sets the host that will facilitate the display of content being navigated to.
@@ -86,7 +86,7 @@ public sealed class NavigationService
     /// </summary>
     public void NavigateBack()
     {
-        if (CanNavigateBack)
+        if (!CanNavigateBack)
             throw new InvalidOperationException(Strings.EmptyBackNavigationHistory);
         
         Type previousType = _back.Pop();
@@ -102,7 +102,7 @@ public sealed class NavigationService
     /// </summary>
     public void NavigateForward()
     {
-        if (CanNavigateForward)
+        if (!CanNavigateForward)
             throw new InvalidOperationException(Strings.EmptyForwardNavigationHistory);
         
         Type nextType = _forward.Pop();
