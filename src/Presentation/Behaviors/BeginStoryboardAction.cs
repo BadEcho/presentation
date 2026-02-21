@@ -148,7 +148,7 @@ public sealed class BeginStoryboardAction : BehaviorAction
         {
             _animationsOnHold = true;
 
-            Mediator?.Broadcast(SystemMessages.CancelAnimationsRequested);
+            Mediator?.Broadcast(SystemMessages.CancelAnimations);
         }
 
         _activeStoryboard.Begin(containingObject, true);

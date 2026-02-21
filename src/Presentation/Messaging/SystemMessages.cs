@@ -23,8 +23,8 @@ public static class SystemMessages
     /// Gets a message requesting all animations currently playing on supporting controls are to be canceled, with the
     /// affected controls being set back to their initial, unanimated state.
     /// </summary>
-    public static MediatorMessage CancelAnimationsRequested
-    { get; } = new (nameof(CancelAnimationsRequested), typeof(Action));
+    public static MediatorMessage CancelAnimations
+    { get; } = new (nameof(CancelAnimations), typeof(Action));
 
     /// <summary>
     /// Gets a message that queries whether a hold on new animations is in effect.

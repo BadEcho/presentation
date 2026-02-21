@@ -89,12 +89,12 @@ public sealed class CancelableAnimationState : AttachableComponent<DependencyObj
     }
     
     private void RegisterMediator(Mediator mediator)
-        => mediator.Register(SystemMessages.CancelAnimationsRequested, MediateCancelAnimationsRequest);
+        => mediator.Register(SystemMessages.CancelAnimations, MediateCancelAnimations);
 
     private void UnregisterMediator(Mediator mediator)
-        => mediator.Unregister(SystemMessages.CancelAnimationsRequested, MediateCancelAnimationsRequest);
+        => mediator.Unregister(SystemMessages.CancelAnimations, MediateCancelAnimations);
 
-    private void MediateCancelAnimationsRequest()
+    private void MediateCancelAnimations()
     { 
         AnimationCanceling?.Invoke(TargetObject, EventArgs.Empty);
     }
