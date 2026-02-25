@@ -16,6 +16,8 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using BadEcho.Interop;
+using BadEcho.Presentation.Windows;
+using Window = System.Windows.Window;
 
 namespace BadEcho.Presentation.Extensions;
 
@@ -128,6 +130,20 @@ public static class WindowExtensions
         IntPtr handle = window.GetHandle();
 
         return new WindowHandle(handle, false);
+    }
+
+    /// <summary>
+    /// Gets a wrapper around a handle of a window created by WPF.
+    /// </summary>
+    /// <param name="window">The current window to create a wrapper around.</param>
+    /// <returns>A <see cref="PresentationWindowWrapper"/> instance for <c>window</c>.</returns>
+    public static PresentationWindowWrapper GetWrapper(this Window window)
+    {
+        Require.NotNull(window, nameof(window));
+
+        nint handle = window.GetHandle();
+
+        return new PresentationWindowWrapper(handle);
     }
 
     private static Rectangle NonDeviceArea(Display display, Rectangle referenceArea)

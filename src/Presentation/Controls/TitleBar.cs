@@ -272,7 +272,7 @@ public sealed class TitleBar : ContentControl
 
         IntPtr handle = host.GetHandle();
 
-        _native = new NativeWindow(new PresentationWindowWrapper(handle));
+        _native = new NativeWindow(host.GetWrapper());
 
         host.Activated += HandleHostActivated;
         host.SizeChanged += HandleHostSizeChanged;
