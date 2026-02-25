@@ -57,7 +57,7 @@ public static class ServiceCollectionExtensions
     {
         Require.NotNull(services, nameof(services));
 
-        var shutdownMode = useWpfLifetime ? ShutdownMode.OnLastWindowClose : ShutdownMode.OnExplicitShutdown;
+        var shutdownMode = useWpfLifetime ? ShutdownMode.OnMainWindowClose : ShutdownMode.OnExplicitShutdown;
 
         services.AddSingleton<Application, TApplication>();
         services.AddSingleton(CreateContext);
