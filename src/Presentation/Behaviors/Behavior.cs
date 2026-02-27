@@ -11,6 +11,7 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Media.Animation;
 using BadEcho.Presentation.Properties;
@@ -28,11 +29,6 @@ public abstract class Behavior<TTarget, TProperty> : Animatable, IAttachableComp
     where TTarget : DependencyObject
     where TProperty : class
 {
-    private readonly WeakReference<TTarget> _targetObject
-        = WeakReferenceExtensions.WithNullTarget<TTarget>();
-
-    private TProperty? _associatedValue;
-
     /// <summary>
     /// Initializes a new instance of the <see cref="Behavior{TTarget,TProperty}"/> class.
     /// </summary>
@@ -43,16 +39,30 @@ public abstract class Behavior<TTarget, TProperty> : Animatable, IAttachableComp
     public PropertyMetadata DefaultMetadata
     { get; }
 
+    /// <summary>
+    /// Gets a mapping between target dependency objects and associated values while ensuring this <see cref="Freezable"/>
+    /// is being accessed appropriately.
+    /// </summary>
+    private ConditionalWeakTable<TTarget, TProperty?> TargetMap
+    {
+        get
+        {
+            ReadPreamble();
+
+            return field;
+        }
+    } = [];
+
     /// <inheritdoc/>
     public void Attach(TTarget targetObject)
     {
         VerifyAccess();
 
-        if (TargetObject != null)
+        if (TargetMap.TryGetValue(targetObject, out _))
             throw new InvalidOperationException(Strings.BehaviorAlreadyAttachedToTarget);
 
         WritePreamble();
-        _targetObject.SetTarget(targetObject);
+        TargetMap.Add(targetObject, null);
         WritePostscript();
     }
 
@@ -61,46 +71,15 @@ public abstract class Behavior<TTarget, TProperty> : Animatable, IAttachableComp
     {
         VerifyAccess();
 
-        if (TargetObject == null)
-            return;
-
         // Value disassociation will have already happened if detachment is occurring by the WPF XAML parser a la OnAttachChanged.
         // Programmatic detachment will occur by calling this method directly, however, and therefore we need to account for values still
         // requiring disassociation.
-        if (AssociatedValue != null)
-            DisassociateValue(targetObject, AssociatedValue);
+        if (TargetMap.TryGetValue(targetObject, out TProperty? associatedValue) && associatedValue != null)
+            DisassociateValue(targetObject, associatedValue);
 
         WritePreamble();
-        _targetObject.SetNullTarget();
+        TargetMap.Remove(targetObject);
         WritePostscript();
-    }
-
-    /// <summary>
-    /// Gets the associated value while ensuring this <see cref="Freezable"/> is being accessed appropriately.
-    /// </summary>
-    protected TProperty? AssociatedValue
-    {
-        get
-        {
-            ReadPreamble();
-
-            return _associatedValue;
-        }
-    }
-
-    /// <summary>
-    /// Gets the target dependency object while ensuring this <see cref="Freezable"/> is being accessed appropriately.
-    /// </summary>
-    private TTarget? TargetObject
-    {
-        get
-        {
-            ReadPreamble();
-
-            _targetObject.TryGetTarget(out TTarget? targetObject);
-
-            return targetObject;
-        }
     }
 
     /// <summary>
@@ -119,10 +98,26 @@ public abstract class Behavior<TTarget, TProperty> : Animatable, IAttachableComp
     /// <param name="oldValue">The previous local value for the attached property.</param>
     protected abstract void OnValueDisassociated(TTarget targetObject, TProperty oldValue);
 
+    /// <summary>
+    /// Gets the value associated with the target object while ensuring this <see cref="Freezable"/> is being accessed appropriately.
+    /// </summary>
+    /// <summary>
+    /// Gets the local value set on a <see cref="DependencyObject"/> instance this behavior is attached to.
+    /// </summary>
+    /// <param name="targetObject">A dependency object this behavior is attached to.</param>
+    /// <returns>The local value of the attached property.</returns>
+    protected TProperty GetAssociatedValue(TTarget targetObject)
+    {
+        if (!TargetMap.TryGetValue(targetObject, out TProperty? value) || value == null)
+            throw new ArgumentException(Strings.BehaviorNotAttachedToTarget, nameof(targetObject));
+
+        return value;
+    }
+
     private void AssociateValue(TTarget targetObject, TProperty newValue)
     {
         WritePreamble();
-        _associatedValue = newValue;
+        TargetMap.AddOrUpdate(targetObject, newValue);
         OnValueAssociated(targetObject, newValue);
         WritePostscript();
     }
@@ -130,7 +125,7 @@ public abstract class Behavior<TTarget, TProperty> : Animatable, IAttachableComp
     private void DisassociateValue(TTarget targetObject, TProperty oldValue)
     {
         WritePreamble();
-        _associatedValue = null;
+        TargetMap.AddOrUpdate(targetObject, null);
         OnValueDisassociated(targetObject, oldValue);
         WritePostscript();
     }
@@ -143,17 +138,13 @@ public abstract class Behavior<TTarget, TProperty> : Animatable, IAttachableComp
         if (e.NewValue == e.OldValue)
             return;
 
-        if (e.OldValue is TProperty oldValue)
-            DisassociateValue(targetObject, oldValue);
-
-        var newValue = (TProperty?) e.NewValue;
-
-        if (TargetObject != null)
+        if (TargetMap.TryGetValue(targetObject, out _))
             Detach(targetObject);
 
-        Attach(targetObject);
-
-        if (newValue != null)
+        if (e.NewValue is TProperty newValue)
+        {
+            Attach(targetObject);
             AssociateValue(targetObject, newValue);
+        }
     }
 }

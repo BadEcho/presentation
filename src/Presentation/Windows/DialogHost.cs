@@ -20,7 +20,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
-
+using BadEcho.Presentation.Behaviors;
 
 namespace BadEcho.Presentation.Windows;
 
@@ -47,9 +47,10 @@ public sealed class DialogHost
     {
         _owner = owner;
         var content = new UserControl
-                   {
-                       ContentTemplateSelector = new ViewContextTemplateSelector()
-                   };
+                      {
+                          ContentTemplateSelector = new ViewContextTemplateSelector(),
+                          Margin = new Thickness(16, 12, 16, 12)
+                      };
 
         // Bind to the source itself.
         var contentBinding = new Binding();
@@ -65,6 +66,8 @@ public sealed class DialogHost
             // Remove the icon from the top corner of the dialog.
             Icon = new DrawingImage()
         };
+
+        WindowBehaviors.SetNonClientArea(_dialog, new Control());
         
         _dialog.LocationChanged += HandleDialogLocationChanged;
         _dialog.Closed += HandleDialogClosed;
@@ -86,15 +89,15 @@ public sealed class DialogHost
     /// <summary>
     /// Gets or sets the amount of padding between the parent and child window.
     /// </summary>
-    public double Padding
+    public Thickness Padding
     {
         get;
         set
         {
             field = value;
-
-            _dialog.Width = _owner.Width - field;
-            _dialog.Height = _owner.Height - field;
+            
+            _dialog.Width = _owner.Width - field.Left - field.Right;
+            _dialog.Height = _owner.Height - field.Top - field.Bottom;
         }
     }
 
@@ -106,7 +109,7 @@ public sealed class DialogHost
     {
         _owner.Effect = new BlurEffect { Radius = 10.0 };
         _owner.IsHitTestVisible = false;
-        
+
         _dialog.Show();
 
         // This instance will be kept alive by the dialog's HwndSource until its closure.
@@ -156,8 +159,8 @@ public sealed class DialogHost
         if (_dialog.IsActive)
             return;
 
-        _dialog.Left = _owner.Left + Padding / 2;
-        _dialog.Top = _owner.Top + Padding / 2;
+        _dialog.Left = _owner.Left + Padding.Left / 2 + Padding.Right / 2;
+        _dialog.Top = _owner.Top + Padding.Top / 2 + Padding.Bottom / 2;
     }
 
     private void HandleDialogLocationChanged(object? sender, EventArgs e)
@@ -165,8 +168,8 @@ public sealed class DialogHost
         if (!_dialog.IsActive)
             return;
 
-        _owner.Left = _dialog.Left - Padding / 2;
-        _owner.Top = _dialog.Top - Padding / 2;
+        _owner.Left = _dialog.Left - Padding.Left / 2 - Padding.Right / 2;
+        _owner.Top = _dialog.Top - Padding.Top / 2 - Padding.Bottom / 2;
     }
 
     private ProcedureResult OwnerWindowProcedure(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam)
@@ -176,7 +179,7 @@ public sealed class DialogHost
         switch (message)
         {   
             case WindowMessage.ExitSizeMove:
-                // Occurs when the user releases the mouse button after resizing the parent window.
+                // Occurs when the user releases the mouse button after resizing or moving the parent window.
                 _dialog.Activate();
                 break;
 

@@ -12,14 +12,15 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
+using Microsoft.Win32;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using BadEcho.Presentation.Properties;
-using Microsoft.Win32;
 using Window = System.Windows.Window;
 
 namespace BadEcho.Presentation.Behaviors;
@@ -49,33 +50,18 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
     private static readonly Thickness _ResizeBorderNormal = new(4);
     private static readonly CornerRadius _CornerRadius = new(12);
 
-    private readonly Border _frameBorder;
-    private readonly Grid _areasGrid;
-
-    private int _generalChangesRemaining = GENERAL_CHANGES_REQUIRED;
-    private bool _delayBorderAdjustment;
-    private bool _nonClientControlAdded;
-
     /// <summary>
-    /// Initializes a new instance of the <see cref="NonClientAreaBehavior"/> class.
+    /// Gets a mapping between target dependency objects and their non-client area configuration.
     /// </summary>
-    public NonClientAreaBehavior()
+    private ConditionalWeakTable<ContentControl, NonClientAreaState> StateMap
     {
-        _areasGrid = new Grid();
-        _areasGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1.0, GridUnitType.Auto) });
-        _areasGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1.0, GridUnitType.Star) });
-        
-        _frameBorder = new Border
+        get
         {
-            BorderBrush = Brushes.Transparent,
-            Child = _areasGrid,
-        };
+            ReadPreamble();
 
-        // We need to account for the resize border edges at run-time, since we own most edges of the frame.
-        // We want to ignore this at design-time, however, as it just adds an empty and unnecessary space at our edges.
-        if (!DesignerProperties.GetIsInDesignMode(_frameBorder)) 
-            _frameBorder.BorderThickness = SystemParameters.HighContrast ? _BorderHighContrast : _BorderNormal;
-    }
+            return field;
+        }
+    } = [];
 
     /// <inheritdoc/>
     /// <remarks>
@@ -102,12 +88,18 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
         Require.NotNull(targetObject, nameof(targetObject));
         Require.NotNull(newValue, nameof(newValue));
 
+        var state = new NonClientAreaState(this);
+
+        WritePreamble();
+        StateMap.Add(targetObject, state);
+        WritePostscript();
+
         SystemEvents.UserPreferenceChanged += HandleUserPreferenceChanged;
         targetObject.Loaded += HandleTargetLoaded;
         targetObject.Unloaded += HandleTargetUnloaded;
         
         if (targetObject.Content != null)
-            AddNonClientControl(targetObject, newValue);
+            AddNonClientControl(targetObject, newValue, state);
 
         DependencyPropertyDescriptor.FromProperty(ContentControl.ContentProperty, targetObject.GetType())
                                     .AddValueChanged(targetObject, OnContentChanged);
@@ -137,8 +129,14 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
         DependencyPropertyDescriptor.FromProperty(ContentControl.ContentProperty, targetObject.GetType())
                                     .RemoveValueChanged(targetObject, OnContentChanged);
 
-        if (_nonClientControlAdded)
-            RemoveNonClientControl(targetObject);
+        var state = GetState(targetObject);
+
+        if (state.NonClientControlAdded)
+            RemoveNonClientControl(targetObject, state);
+
+        WritePreamble();
+        StateMap.Remove(targetObject);
+        WritePostscript();
 
         if (targetObject is not Window window)
             return;
@@ -166,7 +164,7 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
             : _ResizeBorderNormal;
     }
 
-    private void AddNonClientControl(ContentControl window, Control nonClientControl)
+    private static void AddNonClientControl(ContentControl window, Control nonClientControl, NonClientAreaState state)
     {
         var content = (UIElement) window.Content;
 
@@ -175,43 +173,60 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
 
         // We package the non-client control along with the existing content into a grid where they are separated.
         // The first row is the non-client area, the second row is the client area.
-        if (!_nonClientControlAdded)
+        if (!state.NonClientControlAdded)
         {
-            _areasGrid.Children.Add(nonClientControl);
+            state.AreasGrid.Children.Add(nonClientControl);
             Grid.SetRow(nonClientControl, 0);
 
-            _nonClientControlAdded = true;
+            state.NonClientControlAdded = true;
         }
         else
         {
-            if (_areasGrid.Children.Count > 1)
-                _areasGrid.Children.RemoveAt(1);
+            if (state.AreasGrid.Children.Count > 1)
+                state.AreasGrid.Children.RemoveAt(1);
         }
 
         if (null != content)
         {
-            _areasGrid.Children.Add(content);
+            state.AreasGrid.Children.Add(content);
             Grid.SetRow(content, 1);
         }
 
-        window.Content = _frameBorder;
+        window.Content = state.FrameBorder;
     }
 
-    private void RemoveNonClientControl(ContentControl window)
+    private static void RemoveNonClientControl(ContentControl window, NonClientAreaState state)
     {
         UIElement? content = null;
 
-        if (_areasGrid.Children.Count > 1)
-            content = _areasGrid.Children[1];
+        if (state.AreasGrid.Children.Count > 1)
+            content = state.AreasGrid.Children[1];
 
-        _areasGrid.Children.Clear();
+        state.AreasGrid.Children.Clear();
 
         window.Content = content;
 
-        _nonClientControlAdded = false;
+        state.NonClientControlAdded = false;
     }
 
-    private void UpdateWindowVisuals(Window window)
+    private static WindowChrome CreateChrome(Window window, NonClientAreaState state)
+    {
+        var chrome = new WindowChrome
+                     {
+                         CornerRadius = _CornerRadius,
+                         GlassFrameThickness = new Thickness(-1),
+                         ResizeBorderThickness = GetResizeBorderThickness(window),
+                         UseAeroCaptionButtons = true
+                     };
+
+        WindowChrome.SetWindowChrome(window, chrome);
+
+        UpdateWindowVisuals(window, state);
+
+        return chrome;
+    }
+
+    private static void UpdateWindowVisuals(Window window, NonClientAreaState state)
     {   // There is a very small chance our chrome is null here, in the event we somehow have a user preference changed
         // system event before our window has become initialized.
         WindowChrome chrome = WindowChrome.GetWindowChrome(window);
@@ -219,12 +234,12 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
         if (SystemParameters.HighContrast)
         {   // High contrast themes have very noticeable, thick borders whose colors we need to manage when the window's
             // active state changes.
-            _frameBorder.SetResourceReference(Control.BorderBrushProperty,
-                                              window.IsActive
-                                                  ? SystemColors.ActiveCaptionBrushKey
-                                                  : SystemColors.InactiveCaptionBrushKey);
-            if (!_delayBorderAdjustment)
-                _frameBorder.BorderThickness = _BorderHighContrast;
+            state.FrameBorder.SetResourceReference(Control.BorderBrushProperty,
+                                                   window.IsActive
+                                                       ? SystemColors.ActiveCaptionBrushKey
+                                                       : SystemColors.InactiveCaptionBrushKey);
+            if (!state.DelayBorderAdjustment)
+                state.FrameBorder.BorderThickness = _BorderHighContrast;
 
             if (chrome != null)
             {
@@ -235,10 +250,10 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
         }
         else
         {
-            _frameBorder.BorderBrush = Brushes.Transparent;
+            state.FrameBorder.BorderBrush = Brushes.Transparent;
 
-            if (!_delayBorderAdjustment)
-                _frameBorder.BorderThickness = _BorderNormal;
+            if (!state.DelayBorderAdjustment)
+                state.FrameBorder.BorderThickness = _BorderNormal;
             
             if (chrome != null)
             {
@@ -249,59 +264,62 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
         }
     }
 
+    private NonClientAreaState GetState(ContentControl targetObject)
+    {
+        return !StateMap.TryGetValue(targetObject, out NonClientAreaState? state)
+            ? throw new InvalidOperationException(Strings.NoNonClientAreaStateForTarget)
+            : state;
+    }
+
     private void HandleUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
     {   // This event will be raised by a running message pump. So, most of the time we will already be running
         // on the dispatcher's thread. However, we'll still want to manually invoke via the dispatcher,
         // in the event that we have additional message pumps running (which is the case for several of my apps). 
         Dispatcher.Invoke(() =>
         {
-            Window? window = Window.GetWindow(_areasGrid);
+            foreach (var (targetObject, state) in StateMap)
+            {
+                if (targetObject is not Window window)
+                    return;
 
-            if (null == window)
-                return;
+                var chrome = WindowChrome.GetWindowChrome(window);
 
-            var chrome = WindowChrome.GetWindowChrome(window);
+                // In the event we are switching to a high contrast theme, we need to force the corner radius to
+                // a different value before setting it back to the desired amount. Otherwise, the corner radius can
+                // sometimes be lost during the transition, leaving us with pointy edges.
+                chrome?.CornerRadius = new CornerRadius(0);
 
-            // In the event we are switching to a high contrast theme, we need to force the corner radius to
-            // a different value before setting it back to the desire amount. Otherwise, the corner radius can
-            // sometimes be lost during the transition, leaving us with pointy edges.
-            if (chrome != null)
-                chrome.CornerRadius = new CornerRadius(0);
+                /*
+                This is a bit of a hack, but it's the only way I've been able to reliably get the content to be properly
+                painted following a change to and from a high contrast theme.
 
-            /*
-            This is a bit of a hack, but it's the only way I've been able to reliably get the content to be properly
-            painted following a change to and from a high contrast theme. 
-            
-            The thickness of the frame border needs to be adjusted to properly offset the content from the changing 
-            frame border sizes; however, if we do this while the frame is being adjusted, the content can end up not 
-            being properly aligned.
+                The thickness of the frame border needs to be adjusted to properly offset the content from the changing
+                frame border sizes; however, if we do this while the frame is being adjusted, the content can end up not
+                being properly aligned.
 
-            The problem is that it's very difficult to tell when the window's frame is done being adjusted following
-            the enabling/ disabling of a high contrast theme. This event handler will be called many times after such
-            a change, and the only safe time to adjust the frame border's thickness is after the final invocation.
-            
-            From my testing, this event handler's final invocation (during a high contrast theme switch) is the third
-            invocation using the "General" category in its event arguments. This resolves all issues very reliably
-            on my system, however I suspect the behavior just described may differ between systems. More testing is required.
-            */
-            if (e.Category == UserPreferenceCategory.General)
-                _generalChangesRemaining--;
+                The problem is that it's very difficult to tell when the window's frame is done being adjusted following
+                the enabling/ disabling of a high contrast theme. This event handler will be called many times after such
+                a change, and the only safe time to adjust the frame border's thickness is after the final invocation.
 
-            _delayBorderAdjustment = _generalChangesRemaining != 0;
+                From my testing, this event handler's final invocation (during a high contrast theme switch) is the third
+                invocation using the "General" category in its event arguments. This resolves all issues very reliably
+                on my system, however I suspect the behavior just described may differ between systems. More testing is required.
+                */
+                if (e.Category == UserPreferenceCategory.General)
+                    state.GeneralChangesRemaining--;
 
-            UpdateWindowVisuals(window);
+                UpdateWindowVisuals(window, state);
 
-            if (_generalChangesRemaining == 0)
-                _generalChangesRemaining = GENERAL_CHANGES_REQUIRED;
-
+                if (state.GeneralChangesRemaining == 0)
+                    state.GeneralChangesRemaining = GENERAL_CHANGES_REQUIRED;
+            }
         }, DispatcherPriority.Send);
     }
 
     private void HandleTargetLoaded(object sender, RoutedEventArgs e)
     {
         ContentControl contentControl = (ContentControl)sender;
-        Control nonClientControl = AssociatedValue
-                                   ?? throw new InvalidOperationException(Strings.NonClientNotAssociatedWithControl);
+        Control nonClientControl = GetAssociatedValue(contentControl);
 
         // We aren't working with an actual 'Window' during design-time, so, in that case, we bail out here.
         if (DesignerProperties.GetIsInDesignMode(contentControl))
@@ -309,7 +327,9 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
 
         // Now that the non-client control's layout has been finalized, we can adjust the non-client area to the appropriate size.
         Window window = (Window) contentControl;
-        WindowChrome chrome = WindowChrome.GetWindowChrome(window);
+        NonClientAreaState state = GetState(window);
+
+        WindowChrome chrome = WindowChrome.GetWindowChrome(window) ?? CreateChrome(window, state);
 
         chrome.CaptionHeight = nonClientControl.ActualHeight;
     }
@@ -327,18 +347,9 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
             return;
 
         Window window = (Window) sender;
+        NonClientAreaState state = GetState(window);
 
-        WindowChrome.SetWindowChrome(
-            window,
-            new WindowChrome
-            {
-                CornerRadius = _CornerRadius,
-                GlassFrameThickness = new Thickness(-1),
-                ResizeBorderThickness = GetResizeBorderThickness(window),
-                UseAeroCaptionButtons = true
-            });
-        
-        UpdateWindowVisuals(window);
+        CreateChrome(window, state);
     }
 
     private void HandleTargetActivated(object? sender, EventArgs e)
@@ -347,8 +358,9 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
             return;
 
         Window window = (Window) sender;
+        NonClientAreaState state = GetState(window);
 
-        UpdateWindowVisuals(window);
+        UpdateWindowVisuals(window, state);
     }
 
     private void HandleTargetDeactivated(object? sender, EventArgs e)
@@ -357,8 +369,9 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
             return;
 
         Window window = (Window) sender;
+        NonClientAreaState state = GetState(window);
 
-        UpdateWindowVisuals(window);
+        UpdateWindowVisuals(window, state);
     }
 
     private void OnContentChanged(object? sender, EventArgs e)
@@ -367,9 +380,117 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
             return;
 
         ContentControl contentControl = (ContentControl)sender;
-        Control nonClientControl = AssociatedValue
-                                   ?? throw new InvalidOperationException(Strings.NonClientNotAssociatedWithControl);
+        NonClientAreaState state = GetState(contentControl);
+        Control nonClientControl = GetAssociatedValue(contentControl);
 
-        this.BypassHandlers(() => AddNonClientControl(contentControl, nonClientControl));
+        this.BypassHandlers(() => AddNonClientControl(contentControl, nonClientControl, state));
+    }
+
+    /// <summary>
+    /// Provides state data for a target object a <see cref="NonClientAreaBehavior"/> instance is attached to.
+    /// </summary>
+    private sealed class NonClientAreaState
+    {
+        private readonly NonClientAreaBehavior _behavior;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NonClientAreaState"/> class.
+        /// </summary>
+        /// <param name="behavior">The behavior this provides state data for.</param>
+        public NonClientAreaState(NonClientAreaBehavior behavior)
+        {
+            _behavior = behavior;
+            AreasGrid = new Grid();
+            AreasGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1.0, GridUnitType.Auto) });
+            AreasGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1.0, GridUnitType.Star) });
+
+            FrameBorder = new Border
+            {
+                BorderBrush = Brushes.Transparent,
+                Child = AreasGrid,
+            };
+
+            // We need to account for the resize border edges at run-time, since we own most edges of the frame.
+            // We want to ignore this at design-time, however, as it just adds an empty and unnecessary space at our edges.
+            if (!DesignerProperties.GetIsInDesignMode(FrameBorder))
+                FrameBorder.BorderThickness = SystemParameters.HighContrast ? _BorderHighContrast : _BorderNormal;
+        }
+
+        /// <summary>
+        /// Gets the outermost border that frames the entire target object.
+        /// </summary>
+        public Border FrameBorder
+        {
+            get
+            {
+                _behavior.ReadPreamble();
+                return field;
+            }
+        }
+
+        /// <summary>
+        /// Gets the grid that contains the non-client and client areas of the target object.
+        /// </summary>
+        public Grid AreasGrid
+        {
+            get
+            {
+                _behavior.ReadPreamble();
+                return field;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating if the control associated with the owning behavior has been added
+        /// to the non-client area of the target object.
+        /// </summary>
+        public bool NonClientControlAdded
+        {
+            get
+            {
+                _behavior.ReadPreamble();
+                return field;
+            }
+            set
+            {
+                _behavior.WritePreamble();
+                field = value;
+                _behavior.WritePostscript();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the number of <see cref="UserPreferenceCategory.General"/> changes following a theme change
+        /// remaining before the border thickness of <see cref="FrameBorder"/> can be adjusted.
+        /// </summary>
+        public int GeneralChangesRemaining
+        {
+            get
+            {
+                _behavior.ReadPreamble();
+                return field;
+            }
+            set
+            {
+                _behavior.WritePreamble();
+                field = value;
+                DelayBorderAdjustment = field != 0;
+                _behavior.WritePostscript();
+            }
+        } = GENERAL_CHANGES_REQUIRED;
+
+        /// <summary>
+        /// Gets or sets a value indicating if adjustments to the border thickness of <see cref="FrameBorder"/> should be delayed.
+        /// </summary>
+        public bool DelayBorderAdjustment
+        {
+            get
+            {
+                _behavior.ReadPreamble();
+                return field;
+            }
+            // This should only be called within a WritePreamble/Postscript block.
+            private set;
+        }
     }
 }

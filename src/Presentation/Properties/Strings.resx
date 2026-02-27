@@ -137,6 +137,9 @@
   <data name="BadEchoKeyCannotFindType" xml:space="preserve">
     <value>Bad Echo Presentation framework resource key descriptor does not describe a locatable provider type.</value>
   </data>
+	<data name="BehaviorNotAttachedToTarget" xml:space="preserve">
+		<value>Behavior is not attached to the target dependency object.</value>
+	</data>
   <data name="BadEchoKeyCannotFindField" xml:space="preserve">
     <value>Bad Echo Presentation framework resource key descriptor does not describe a locatable field on a key provider.</value>
   </data>
@@ -221,10 +224,10 @@
 	<data name="ValidationFileDoesNotExist" xml:space="preserve">
 		<value>File does not exist.</value>
 	</data>
-	<data name="NonClientNotAssociatedWithControl" xml:space="preserve">
-		<value>Behavior needs to be associated with a control.</value>
-	</data>
 	<data name="JsonRectInvalidValue" xml:space="preserve">
 		<value>The provided JSON value is an invalid representation of a Rect. A Rect value is a delimited string describing four sides.</value>
+	</data>
+	<data name="NoNonClientAreaStateForTarget" xml:space="preserve">
+		<value>Behavior does not have any associated non-client area state data for the target object.</value>
 	</data>
 </root>
