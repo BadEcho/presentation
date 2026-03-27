@@ -115,7 +115,7 @@ public static class WindowExtensions
     {
         Require.NotNull(window, nameof(window));
 
-        return new WindowInteropHelper(window).Handle;
+        return new WindowInteropHelper(window).EnsureHandle();
     }
 
     /// <summary>
