@@ -19,7 +19,6 @@ using System.Windows.Input;
 using BadEcho.Interop;
 using BadEcho.Presentation.Extensions;
 using BadEcho.Presentation.Properties;
-using BadEcho.Presentation.Windows;
 using Microsoft.Win32;
 using Point = System.Windows.Point;
 using Window = System.Windows.Window;
@@ -71,6 +70,14 @@ public sealed class TitleBar : ContentControl
     /// </summary>
     public static readonly DependencyProperty IsNavigationVisibleProperty
         = DependencyProperty.Register(nameof(IsNavigationVisible),
+                                      typeof(bool),
+                                      typeof(TitleBar),
+                                      new FrameworkPropertyMetadata(true));
+    /// <summary>
+    /// Identifies the <see cref="IsMouseNavigationEnabled"/> dependendency property.
+    /// </summary>
+    public static readonly DependencyProperty IsMouseNavigationEnabledProperty
+        = DependencyProperty.Register(nameof(IsMouseNavigationEnabled),
                                       typeof(bool),
                                       typeof(TitleBar),
                                       new FrameworkPropertyMetadata(true));
@@ -142,6 +149,16 @@ public sealed class TitleBar : ContentControl
     }
 
     /// <summary>
+    /// Gets or sets a value indicating if navigation commands are triggered directly via the
+    /// Back (XButton1) and Forward (XButton2) mouse buttons.
+    /// </summary>
+    public bool IsMouseNavigationEnabled
+    {
+        get => (bool) GetValue(IsMouseNavigationEnabledProperty);
+        set => SetValue(IsMouseNavigationEnabledProperty, value);
+    }
+
+    /// <summary>
     /// Gets or sets the location of this title bar's content relative to any navigation buttons.
     /// </summary>
     public TitleBarContentLocation ContentLocation
@@ -155,7 +172,7 @@ public sealed class TitleBar : ContentControl
     {
         if (_minimizeButton != null)
             _minimizeButton.Click -= HandleMinimizeClick;
-
+        
         if (_maximizeButton != null)
             _maximizeButton.Click -= HandleMaximizeClick;
 
@@ -270,12 +287,11 @@ public sealed class TitleBar : ContentControl
 
         SystemEvents.UserPreferenceChanged += HandleUserPreferenceChanged;
 
-        IntPtr handle = host.GetHandle();
-
         _native = new NativeWindow(host.GetWrapper());
 
         host.Activated += HandleHostActivated;
         host.SizeChanged += HandleHostSizeChanged;
+        host.MouseDown += HandleHostMouseDown;
 
         UpdateHost(host);
     }
@@ -290,6 +306,7 @@ public sealed class TitleBar : ContentControl
         SystemEvents.UserPreferenceChanged -= HandleUserPreferenceChanged;
         host.Activated -= HandleHostActivated;
         host.SizeChanged -= HandleHostSizeChanged;
+        host.MouseDown -= HandleHostMouseDown;
     }
 
     private void HandleHostActivated(object? sender, EventArgs e)
@@ -302,6 +319,18 @@ public sealed class TitleBar : ContentControl
 
     private void HandleHostSizeChanged(object sender, SizeChangedEventArgs e)
         => UpdateHost((Window) sender);
+
+    private void HandleHostMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        if (!IsMouseNavigationEnabled)
+            return;
+
+        if (e.ChangedButton == MouseButton.XButton1)
+        {
+            BackCommand?.Execute(null);
+            e.Handled = true;
+        }
+    }
 
     private void HandleUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
     {   // This event will be raised by a running message pump. So, most of the time we will already be running
