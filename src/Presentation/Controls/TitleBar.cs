@@ -170,14 +170,9 @@ public sealed class TitleBar : ContentControl
     /// <inheritdoc/>
     public override void OnApplyTemplate()
     {
-        if (_minimizeButton != null)
-            _minimizeButton.Click -= HandleMinimizeClick;
-        
-        if (_maximizeButton != null)
-            _maximizeButton.Click -= HandleMaximizeClick;
-
-        if (_closeButton != null)
-            _closeButton.Click -= HandleCloseClick;
+        _minimizeButton?.Click -= HandleMinimizeClick;
+        _maximizeButton?.Click -= HandleMaximizeClick;
+        _closeButton?.Click -= HandleCloseClick;
 
         base.OnApplyTemplate();
 
@@ -189,21 +184,15 @@ public sealed class TitleBar : ContentControl
 
         _highContrastPanel = GetTemplateChild(HIGH_CONTRAST_PANEL_NAME) as StackPanel;
         _minimizeButton = GetTemplateChild(MINIMIZE_BUTTON_NAME) as Button;
-
-        if (_minimizeButton != null)
-            _minimizeButton.Click += HandleMinimizeClick;
+        _minimizeButton?.Click += HandleMinimizeClick;
 
         _maximizeButton = GetTemplateChild(MAXIMIZE_BUTTON_NAME) as Button;
-
-        if (_maximizeButton != null)
-            _maximizeButton.Click += HandleMaximizeClick;
+        _maximizeButton?.Click += HandleMaximizeClick;
 
         _maximizeButtonIcon = GetTemplateChild(MAXIMIZE_BUTTON_ICON_NAME) as TextBlock;
 
         _closeButton = GetTemplateChild(CLOSE_BUTTON_NAME) as Button;
-
-        if (_closeButton != null)
-            _closeButton.Click += HandleCloseClick;
+        _closeButton?.Click += HandleCloseClick;
     }
 
     private static bool IsContentLocationValid(object value)
@@ -289,7 +278,8 @@ public sealed class TitleBar : ContentControl
 
         _native = new NativeWindow(host.GetWrapper());
 
-        host.Activated += HandleHostActivated;
+        host.Activated += HandleHostChanged;
+        host.StateChanged += HandleHostChanged;
         host.SizeChanged += HandleHostSizeChanged;
         host.MouseDown += HandleHostMouseDown;
 
@@ -304,12 +294,13 @@ public sealed class TitleBar : ContentControl
             return;
 
         SystemEvents.UserPreferenceChanged -= HandleUserPreferenceChanged;
-        host.Activated -= HandleHostActivated;
+        host.Activated -= HandleHostChanged;
+        host.StateChanged -= HandleHostChanged;
         host.SizeChanged -= HandleHostSizeChanged;
         host.MouseDown -= HandleHostMouseDown;
     }
 
-    private void HandleHostActivated(object? sender, EventArgs e)
+    private void HandleHostChanged(object? sender, EventArgs e)
     {
         Window host = (Window?) sender
                       ?? throw new InvalidOperationException(Strings.WindowEventNoEventSender);
