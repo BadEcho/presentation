@@ -46,7 +46,7 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
 
     private static readonly Thickness _BorderHighContrast = new(8, 2, 8, 8);
     private static readonly Thickness _ResizeBorderHighContrast = new(8, 2, 8, 8);
-    private static readonly Thickness _BorderNormal = new(4, 0, 4, 4);
+    private static readonly Thickness _BorderNormal = new(0);
     private static readonly Thickness _ResizeBorderNormal = new(4);
     private static readonly CornerRadius _CornerRadius = new(12);
 
