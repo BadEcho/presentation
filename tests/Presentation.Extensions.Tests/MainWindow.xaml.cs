@@ -11,16 +11,14 @@
 // </copyright>
 // -----------------------------------------------------------------------
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using System.Windows;
 
 namespace BadEcho.Presentation.Extensions.Tests;
 
-public class Startup
+public partial class MainWindow
 {
-    public void ConfigureHostApplicationBuilder(IHostApplicationBuilder builder) 
+    public MainWindow()
     {
-        builder.Services.AddTransient<TestService>();
-        builder.Services.AddApplication<App,MainWindow>();
+        InitializeComponent();
     }
 }

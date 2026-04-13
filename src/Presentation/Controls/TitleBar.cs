@@ -259,7 +259,7 @@ public sealed class TitleBar : ContentControl
             Display display = Display.FromWindow(_native.Handle);
 
             Rectangle captionButtonBounds = _native.CaptionButtonBounds;
-            _mainPanel.Width = (captionButtonBounds.Left / display.ScaleFactor) - _mainPanel.Margin.Left - _mainPanel.Margin.Right;
+            _mainPanel.Width = captionButtonBounds.Left / display.ScaleFactor - _mainPanel.Margin.Left - _mainPanel.Margin.Right;
         }
     }
 
