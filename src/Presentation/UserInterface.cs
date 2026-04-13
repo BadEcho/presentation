@@ -56,29 +56,10 @@ public static class UserInterface
     {
         Require.NotNull(applicationFactory, nameof(applicationFactory));
 
-        return RunApplication(applicationFactory, _ => { });
-    }
-
-    /// <summary>
-    /// Runs the specified application in a context appropriate for hosting UI components.
-    /// </summary>
-    /// <typeparam name="TApplication">The type of <see cref="Application"/> to instantiate and run in the context.</typeparam>
-    /// <param name="applicationFactory">A factory method that creates the application.</param>
-    /// <param name="configureApplication">A method that configures the application.</param>
-    /// <returns>The context hosting the application.</returns>
-    public static UserInterfaceContext RunApplication<TApplication>(Func<TApplication> applicationFactory,
-                                                                    Action<TApplication> configureApplication)
-        where TApplication : Application
-    {
-        Require.NotNull(applicationFactory, nameof(applicationFactory));
-        Require.NotNull(configureApplication, nameof(configureApplication));
-
         return new UserInterfaceContext(() =>
         {
             TApplication application = applicationFactory();
 
-            configureApplication(application);
-            
             application.Run();
         });
     }

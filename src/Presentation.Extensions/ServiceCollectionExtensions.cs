@@ -27,22 +27,29 @@ public static class ServiceCollectionExtensions
     /// Adds services that enable support for hosting the specified Windows Presentation Foundation application.
     /// </summary>
     /// <typeparam name="TApplication">The type of <see cref="Application"/> to host.</typeparam>
+    /// <typeparam name="TWindow">
+    /// The type of <see cref="Window"/> which will be attached to the hosted application as the main window.
+    /// </typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> instance to add services to.</param>
     /// <returns>The current <see cref="IServiceCollection"/> instance so that additional calls can be chained.</returns>
     /// <remarks>
     /// This method will configure any running application host so that its lifetime is shared with the WPF application.
     /// When the last window is closed, the application host will stop.
     /// </remarks>
-    public static IServiceCollection AddApplication<TApplication>(this IServiceCollection services)
+    public static IServiceCollection AddApplication<TApplication, TWindow>(this IServiceCollection services)
         where TApplication : Application
+        where TWindow : Window
     {
-        return services.AddApplication<TApplication>(true);
+        return services.AddApplication<TApplication, TWindow>(true);
     }
 
     /// <summary>
     /// Adds services that enable support for hosting the specified Windows Presentation Foundation application.
     /// </summary>
     /// <typeparam name="TApplication">The type of <see cref="Application"/> to host.</typeparam>
+    /// <typeparam name="TWindow">
+    /// The type of <see cref="Window"/> which will be attached to the hosted application as the main window.
+    /// </typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> instance to add services to.</param>
     /// <param name="useWpfLifetime">
     /// Value indicating if the lifetime of the host is tied to the lifetime of the WPF application.
@@ -52,14 +59,16 @@ public static class ServiceCollectionExtensions
     /// If <paramref name="useWpfLifetime"/> is <c>true</c>, the WPF application will shut down when the last window
     /// is closed, and any running application host will stop.
     /// </remarks>
-    public static IServiceCollection AddApplication<TApplication>(this IServiceCollection services, bool useWpfLifetime)
+    public static IServiceCollection AddApplication<TApplication, TWindow>(this IServiceCollection services, bool useWpfLifetime)
         where TApplication : Application
+        where TWindow : Window
     {
         Require.NotNull(services, nameof(services));
 
-        var shutdownMode = useWpfLifetime ? ShutdownMode.OnMainWindowClose : ShutdownMode.OnExplicitShutdown;
+        var shutdownMode = useWpfLifetime ? ShutdownMode.OnLastWindowClose : ShutdownMode.OnExplicitShutdown;
 
         services.AddSingleton<Application, TApplication>();
+        services.AddSingleton<TWindow>();
         services.AddSingleton(CreateContext);
 
         services.AddHostedService<ApplicationHostedService>();
@@ -71,8 +80,16 @@ public static class ServiceCollectionExtensions
 
         UserInterfaceContext CreateContext(IServiceProvider serviceProvider)
         {
-            return UserInterface.RunApplication(serviceProvider.GetRequiredService<Application>,
-                                                app => app.ShutdownMode = shutdownMode);
+            return UserInterface.RunApplication(() =>
+                                                {
+                                                    var app = serviceProvider.GetRequiredService<Application>();
+                                                    var mainWindow = serviceProvider.GetRequiredService<TWindow>();
+                                                    
+                                                    app.MainWindow = mainWindow;
+                                                    app.ShutdownMode = shutdownMode;
+
+                                                    return app;
+                                                });
         }
     }
 }
