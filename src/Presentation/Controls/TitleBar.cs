@@ -19,7 +19,6 @@ using System.Windows.Input;
 using BadEcho.Interop;
 using BadEcho.Presentation.Extensions;
 using BadEcho.Presentation.Properties;
-using Microsoft.Win32;
 using Point = System.Windows.Point;
 using Window = System.Windows.Window;
 
@@ -274,8 +273,6 @@ public sealed class TitleBar : ContentControl
         if (host == null)
             return;
 
-        SystemEvents.UserPreferenceChanged += HandleUserPreferenceChanged;
-
         _native = new NativeWindow(host.GetWrapper());
 
         host.Activated += HandleHostChanged;
@@ -293,7 +290,6 @@ public sealed class TitleBar : ContentControl
         if (host == null)
             return;
 
-        SystemEvents.UserPreferenceChanged -= HandleUserPreferenceChanged;
         host.Activated -= HandleHostChanged;
         host.StateChanged -= HandleHostChanged;
         host.SizeChanged -= HandleHostSizeChanged;
@@ -321,21 +317,6 @@ public sealed class TitleBar : ContentControl
             BackCommand?.Execute(null);
             e.Handled = true;
         }
-    }
-
-    private void HandleUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)
-    {   // This event will be raised by a running message pump. So, most of the time we will already be running
-        // on the dispatcher's thread. However, we'll still want to manually invoke via the dispatcher,
-        // in the event that we have additional message pumps running (which is the case for several of my apps). 
-        Dispatcher.Invoke(() =>
-        {
-            Window? host = Window.GetWindow(this);
-
-            if (host == null)
-                return;
-
-            UpdateHost(host);
-        });
     }
 
     private void HandleMinimizeClick(object sender, RoutedEventArgs e)
