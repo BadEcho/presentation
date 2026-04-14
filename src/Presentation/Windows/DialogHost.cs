@@ -35,17 +35,25 @@ namespace BadEcho.Presentation.Windows;
 public sealed class DialogHost
 {
     private readonly System.Windows.Window _owner;
+    private readonly WindowWrapper _ownerWrapper;
     private readonly System.Windows.Window _dialog;
 
-    private PresentationWindowWrapper? _ownerWrapper;
-    
     /// <summary>
     /// Initializes a new instance of the <see cref="DialogHost"/> class.
     /// </summary>
     /// <param name="owner">The parent window.</param>
-    public DialogHost(System.Windows.Window owner)
+    /// <param name="ownerWrapper">A wrapper around the parent window's handle.</param>
+    /// <remarks>>
+    /// Presentation window wrappers won't be garbage collected until the associated window's HwndSource is destroyed.
+    /// Creating a wrapper around the owner by the dialog host would result in a memory leak that would become noticeable
+    /// if the owner is long-lived.
+    /// </remarks>
+    public DialogHost(System.Windows.Window owner, WindowWrapper ownerWrapper)
     {
         _owner = owner;
+        _ownerWrapper = ownerWrapper;
+        _ownerWrapper.AddCallback(OwnerWindowProcedure);
+
         var content = new UserControl
                       {
                           ContentTemplateSelector = new ViewContextTemplateSelector(),
@@ -74,11 +82,6 @@ public sealed class DialogHost
 
         _owner.SizeChanged += HandleOwnerSizeChanged;
         _owner.LocationChanged += HandleOwnerLocationChanged;
-        
-        if (_owner.IsInitialized)
-            HookWindow();
-        else
-            _owner.SourceInitialized += HandleOwnerSourceInitialized;
     }
 
     /// <summary>
@@ -121,29 +124,18 @@ public sealed class DialogHost
         _dialog.DataContext = viewModel;
     }
 
-    private void HookWindow()
-    {
-        _ownerWrapper = _owner.GetWrapper();
-
-        _ownerWrapper.AddCallback(OwnerWindowProcedure);
-    }
-
     private void HandleDialogClosed(object? sender, EventArgs e)
     {
         _owner.SizeChanged -= HandleOwnerSizeChanged;
         _owner.LocationChanged -= HandleOwnerLocationChanged;
-        _owner.SourceInitialized -= HandleOwnerSourceInitialized;
-
-        _ownerWrapper?.RemoveCallback(OwnerWindowProcedure);
+        
+        _ownerWrapper.RemoveCallback(OwnerWindowProcedure);
 
         _owner.Effect = null;
         _owner.IsHitTestVisible = true;
 
         Closed?.Invoke(this, EventArgs.Empty);
     }
-
-    private void HandleOwnerSourceInitialized(object? sender, EventArgs e) 
-        => HookWindow();
 
     private void HandleOwnerSizeChanged(object sender, SizeChangedEventArgs e)
     {   // If the size of the parent changes, we'll change along with it.
