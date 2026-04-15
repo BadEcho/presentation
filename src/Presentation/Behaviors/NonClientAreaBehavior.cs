@@ -19,6 +19,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shell;
+using BadEcho.Extensions;
 using BadEcho.Interop;
 using BadEcho.Presentation.Extensions;
 using BadEcho.Presentation.Properties;
@@ -46,7 +47,7 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
     private static readonly Thickness _BorderHighContrast = new(8, 2, 8, 8);
     private static readonly Thickness _ResizeBorderHighContrast = new(8, 2, 8, 8);
     private static readonly Thickness _BorderNormal = new(0);
-    private static readonly Thickness _BorderNormalPadded = new(3,0,0,0);
+    private static readonly Thickness _BorderNormalPadded = new(3,0,0,3);
     private static readonly Thickness _ResizeBorderNormal = new(4);
     private static readonly CornerRadius _CornerRadius = new(12);
 
@@ -243,9 +244,12 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
         else
         {
             state.FrameBorder.BorderBrush = Brushes.Transparent;
-            // The normal frame border thickness sometimes needs to be padded in response to system theme related events,
-            // see documentation for the ThemeSettingsChanged property for more information.
-            state.FrameBorder.BorderThickness = state.ThemeSettingsChanged ? _BorderNormalPadded : _BorderNormal;
+            // If the user switches between (non-HC) themes, or makes a change to the active theme, the content of a window with
+            // a custom chrome attached will no longer be offset by the size of the window's resize borders (possibly a bug with the framework?).
+            // This can be detected by checking if the width of the content is the same as the window. If so, then the resize border is no longer
+            // offsetting the content. We then correct this by increasing the thickness of the content's own border.
+            state.FrameBorder.BorderThickness =
+                window.ActualWidth.ApproximatelyEquals(state.FrameBorder.ActualWidth) ? _BorderNormalPadded : _BorderNormal;
 
             chrome.CornerRadius = _CornerRadius;
             chrome.ResizeBorderThickness = GetResizeBorderThickness(window);
@@ -419,35 +423,6 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
         }
 
         /// <summary>
-        /// Gets or sets a value indicating if a system theme related change occurred while the behavior has been active.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        /// This will be set when the user switches between (non-HC) themes in their Personalization settings,
-        /// or edits the currently active theme. When this happens, the window's content will be slightly offset
-        /// to the left (I'm assuming due to some WPF bug having to do with custom non-client areas).
-        /// </para>
-        /// <para>
-        /// We set this property to true to indicate to the behavior to pad the frame border's thickness to correct this offset.
-        /// This additional padding needs to remain in effect for the remainder of the window's lifetime.
-        /// </para>
-        /// </remarks>
-        public bool ThemeSettingsChanged
-        {
-            get
-            {
-                _behavior.ReadPreamble();
-                return field;
-            }
-            private set
-            {
-                _behavior.WritePreamble();
-                field = value;
-                _behavior.WritePostscript();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the corner radius value that should be applied to the non-client area during the next visuals update.
         /// </summary>
         /// <remarks>
@@ -493,12 +468,6 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
 
             if (hwndSource is not { RootVisual: Window window })
                 return result;
-
-            if ((WindowMessage)msg == WindowMessage.SystemColorChange)
-            {
-                ThemeSettingsChanged = true;
-                UpdateWindowVisuals(window, this);
-            }
 
             if ((WindowMessage) msg == WindowMessage.ThemeChanged)
             {
