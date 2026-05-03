@@ -22,27 +22,43 @@ namespace BadEcho.Presentation.Behaviors;
 public sealed class Trigger : ActionSource<Trigger>
 {
     private DependencyPropertyDescriptor? _targetDescriptor;
-    private DependencyProperty? _property;
     
     /// <summary>
     /// Gets or sets the property that returns the value that is compared with <see cref="Value"/>.
     /// </summary>
     public DependencyProperty? Property
     {
-        get => _property;
+        get
+        {
+            ReadPreamble();
+            return field;
+        }
         set
         {
-            _property = value;
-            
+            WritePreamble();
+            field = value;
             UpdatePropertyBinding();
+            WritePostscript();
         }
     }
 
     /// <summary>
     /// Get or sets the value to be compared with the value of <see cref="Property"/>.
     /// </summary>
-    public object? Value 
-    { get; set; }
+    public object? Value
+    {
+        get
+        {
+            ReadPreamble();
+            return field;
+        }
+        set
+        {
+            WritePreamble();
+            field = value;
+            WritePostscript();
+        }
+    }
 
     /// <inheritdoc/>
     protected override void OnAttached()
@@ -60,8 +76,10 @@ public sealed class Trigger : ActionSource<Trigger>
         if (TargetObject == null || _targetDescriptor == null)
             return;
 
+        WritePreamble();
         _targetDescriptor.RemoveValueChanged(TargetObject, OnValueChanged);
         _targetDescriptor = null;
+        WritePostscript();
     }
 
     private void UpdatePropertyBinding()
@@ -86,22 +104,10 @@ public sealed class Trigger : ActionSource<Trigger>
     {
         if (TargetObject == null || Property == null)
             return;
-        
+
         var targetValue = TargetObject.GetValue(Property);
         
-        // The trigger's Value property, set via an attribute in XAML, will always have an underlying type of string,
-        // since the XAML processor doesn't have any information about its actual type (it's declared as an object to allow all possible types).
-        // Using a converter from TypeDescriptor will handle all possible primitive types, as well as WPF - specific types such as Thickness.
-        var triggerValue = Value == null
-            ? null
-            : TypeDescriptor.GetConverter(Property.PropertyType).ConvertFrom(Value);
-
-        if (targetValue == null && triggerValue != null)
-            return;
-
-        if (targetValue != null && !targetValue.Equals(triggerValue))
-            return;
-
-        ExecuteActions();
+        if (XamlValueComparer.Evaluate(targetValue, Value))
+            ExecuteActions();
     }
 }
