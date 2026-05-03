@@ -67,12 +67,6 @@ using BadEcho.Properties;
                            Target = "~M:BadEcho.Presentation.ViewModels.ViewModel`1.Disconnect",
                            Justification = "This seems to be a false positive and bug in code analysis. We're doing a type conversion using the 'as' keyword of an object of generic type T to IViewModel. There is no guarantee at all, given the lack of generic constraints, that T is an IViewModel and won't be null.")]
 
-[assembly: SuppressMessage("Maintainability",
-                           "CA1508:Avoid dead conditional code",
-                           Scope = "member",
-                           Target = "~M:BadEcho.Presentation.ViewModels.CollectionViewModelEngine`2.HandleItemsChanged(System.Object,BadEcho.Collections.CollectionPropertyChangedEventArgs)",
-                           Justification = "This is yet another a strange false positive. The source of the value is clearly from a property that has been marked as being a reference that can be null. So, a null check is required.")]
-
 [assembly: SuppressMessage("Style",
                            "IDE0022:Use expression body for methods",
                            Scope = "member",
@@ -113,3 +107,9 @@ using BadEcho.Properties;
                            Scope = "member",
                            Target = "~P:BadEcho.Presentation.Behaviors.OverrideResourceAction.Value",
                            Justification = "While this warning also has merit, there is value in having this declaratively set property be akin to the likes of Setter.Value, etc. for usability purposes.")]
+
+[assembly: SuppressMessage("Naming",
+                           "CA1721",
+                           Scope = "member",
+                           Target = "~P:BadEcho.Presentation.Behaviors.DataTrigger.Value",
+                           Justification = "While the warning has merit, the properties of this type should mirror those of System.Windows.DataTrigger for usability purposes.")]

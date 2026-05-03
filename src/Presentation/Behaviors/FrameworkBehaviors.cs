@@ -1,7 +1,7 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright>
 //      Created by Matt Weber <matt@badecho.com>
-//      Copyright @ 2025 Bad Echo LLC. All rights reserved.
+//      Copyright @ 2026 Bad Echo LLC. All rights reserved.
 //
 //      Bad Echo Technologies are licensed under the
 //      GNU Affero General Public License v3.0.
@@ -41,6 +41,16 @@ public static class FrameworkBehaviors
             typeof(FrameworkBehaviors));
 
     /// <summary>
+    /// Identifies the attached property that gets or sets a <see cref="FrameworkElement"/> instance's collection of
+    /// data triggers.
+    /// </summary>
+    public static readonly DependencyProperty DataTriggersProperty
+        = BehaviorFactory.Create<DataTriggersBehavior>(
+            NameOf.ReadAccessorEnabledDependencyPropertyName(() => DataTriggersProperty),
+            typeof(DataTriggerCollection),
+            typeof(FrameworkBehaviors));
+
+    /// <summary>
     /// Gets the value of the <see cref="EventTriggersProperty"/> attached property for a given <see cref="FrameworkElement"/>.
     /// </summary>
     /// <param name="source">The framework-level element from which the property value is read.</param>
@@ -55,6 +65,14 @@ public static class FrameworkBehaviors
     /// <returns>The collection of property triggers attached to <c>source</c>.</returns>
     public static TriggerCollection GetTriggers(FrameworkElement source)
         => TriggersBehavior.GetAttachment(source);
+
+    /// <summary>
+    /// Gets the value of the <see cref="DataTriggersProperty"/> attached property for a given <see cref="FrameworkElement"/>.
+    /// </summary>
+    /// <param name="source">The framework-level element from which the property value is read.</param>
+    /// <returns>The collection of data triggers attached to <c>source</c>.</returns>
+    public static DataTriggerCollection GetDataTriggers(FrameworkElement source)
+        => DataTriggersBehavior.GetAttachment(source);
     
     /// <summary>
     /// Provides a compound behavior that hosts a collection of event triggers attached to a target framework-level element.
@@ -62,7 +80,7 @@ public static class FrameworkBehaviors
     private sealed class EventTriggersBehavior : CompoundBehavior<FrameworkElement, EventTriggerCollection>
     {
         /// <summary>
-        /// Gets the value of the <see cref="FrameworkBehaviors.EventTriggersProperty"/> attached property for a given
+        /// Gets the value of the <see cref="EventTriggersProperty"/> attached property for a given
         /// <see cref="FrameworkElement"/>.
         /// </summary>
         /// <param name="source">The framework-level element from which the property value is read.</param>
@@ -81,7 +99,7 @@ public static class FrameworkBehaviors
     private sealed class TriggersBehavior : CompoundBehavior<FrameworkElement, TriggerCollection>
     {
         /// <summary>
-        /// Gets the value of the <see cref="FrameworkBehaviors.TriggersProperty"/> attached property for a given
+        /// Gets the value of the <see cref="TriggersProperty"/> attached property for a given
         /// <see cref="FrameworkElement"/>.
         /// </summary>
         /// <param name="source">The framework-level element from which the property value is read.</param>
@@ -92,5 +110,25 @@ public static class FrameworkBehaviors
         /// <inheritdoc/>
         protected override Freezable CreateInstanceCore() 
             => new TriggersBehavior();
+    }
+
+    /// <summary>
+    /// Provides a compound behavior that hosts a collection of data triggers attached to a target framework-level element.
+    /// </summary>
+    private sealed class DataTriggersBehavior : CompoundBehavior<FrameworkElement, DataTriggerCollection>
+    {
+        /// <summary>
+        /// Gets the value of the <see cref="DataTriggersProperty"/>
+        /// </summary>
+        /// <param name="source">The framework-level element from which the property value is read.</param>
+        /// <returns>The collection of data triggers attached to <c>source</c>.</returns>
+        public static DataTriggerCollection GetAttachment(FrameworkElement source)
+            => GetAttachment(source, DataTriggersProperty);
+
+        /// <inheritdoc/>
+        protected override Freezable CreateInstanceCore()
+        {
+            return new DataTriggersBehavior();
+        }
     }
 }

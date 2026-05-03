@@ -1,7 +1,7 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright>
 //      Created by Matt Weber <matt@badecho.com>
-//      Copyright @ 2025 Bad Echo LLC. All rights reserved.
+//      Copyright @ 2026 Bad Echo LLC. All rights reserved.
 //
 //      Bad Echo Technologies are licensed under the
 //      GNU Affero General Public License v3.0.
@@ -90,12 +90,8 @@ public sealed class Trigger : ActionSource<Trigger>
         if (Property == null)
             return;
 
-        if (_targetDescriptor != null)
-        {
-            _targetDescriptor.RemoveValueChanged(TargetObject, OnValueChanged);
-            _targetDescriptor = null;
-        }
-
+        _targetDescriptor?.RemoveValueChanged(TargetObject, OnValueChanged);
+        // The property descriptor is cached so that we can remove a previously added value-changed handler, even if the Property changes.
         _targetDescriptor = DependencyPropertyDescriptor.FromProperty(Property, TargetObject.GetType());
         _targetDescriptor.AddValueChanged(TargetObject, OnValueChanged);
     }

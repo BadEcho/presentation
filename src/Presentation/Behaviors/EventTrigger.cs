@@ -1,7 +1,7 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright>
 //      Created by Matt Weber <matt@badecho.com>
-//      Copyright @ 2025 Bad Echo LLC. All rights reserved.
+//      Copyright @ 2026 Bad Echo LLC. All rights reserved.
 //
 //      Bad Echo Technologies are licensed under the
 //      GNU Affero General Public License v3.0.
@@ -60,8 +60,10 @@ public sealed class EventTrigger : ActionSource<EventTrigger>
         if (TargetObject == null || _routedEvent == null)
             return;
 
+        WritePreamble();
         TargetObject.RemoveHandler(_routedEvent, (RoutedEventHandler) OnEvent);
         _routedEvent = null;
+        WritePostscript();
     }
 
     private static void OnEventNameChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
@@ -76,21 +78,23 @@ public sealed class EventTrigger : ActionSource<EventTrigger>
         if (TargetObject == null)
             return;
 
+        WritePreamble();
+
         if (_routedEvent != null)
         {
             TargetObject.RemoveHandler(_routedEvent, (RoutedEventHandler) OnEvent);
             _routedEvent = null;
         }
-        
-        if (string.IsNullOrEmpty(EventName))
-            return;
 
-        _routedEvent = EventManager.GetRoutedEvents().FirstOrDefault(e => e.Name == EventName);
-        
-        if (_routedEvent == null)
-            throw new InvalidOperationException(Strings.UnknownRoutedEvent.InvariantFormat(EventName));
+        if (!string.IsNullOrEmpty(EventName))
+        {
+            _routedEvent = EventManager.GetRoutedEvents().FirstOrDefault(e => e.Name == EventName)
+                           ?? throw new InvalidOperationException(Strings.UnknownRoutedEvent.InvariantFormat(EventName));
 
-        TargetObject.AddHandler(_routedEvent, (RoutedEventHandler) OnEvent);
+            TargetObject.AddHandler(_routedEvent, (RoutedEventHandler) OnEvent);
+        }
+
+        WritePostscript();
     }
 
     private void OnEvent(object sender, RoutedEventArgs e)
