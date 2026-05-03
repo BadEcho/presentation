@@ -86,9 +86,6 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
     /// </remarks>
     protected override void OnValueAssociated(ContentControl targetObject, Control newValue)
     {
-        Require.NotNull(targetObject, nameof(targetObject));
-        Require.NotNull(newValue, nameof(newValue));
-
         var state = new NonClientAreaState(this, targetObject);
 
         WritePreamble();
@@ -120,8 +117,6 @@ public sealed class NonClientAreaBehavior : Behavior<ContentControl, Control>, I
     /// </remarks>
     protected override void OnValueDisassociated(ContentControl targetObject, Control oldValue)
     {
-        Require.NotNull(targetObject, nameof(targetObject));
-
         targetObject.Loaded -= HandleTargetLoaded;
         targetObject.Unloaded -= HandleTargetUnloaded;
 
