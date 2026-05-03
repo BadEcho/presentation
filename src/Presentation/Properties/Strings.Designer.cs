@@ -340,6 +340,15 @@ namespace BadEcho.Presentation.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Behavior does not have any associated autocompletion state data for the target object..
+        /// </summary>
+        internal static string NoAutocompletionStateForTarget {
+            get {
+                return ResourceManager.GetString("NoAutocompletionStateForTarget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Behavior does not have any associated non-client area state data for the target object..
         /// </summary>
         internal static string NoNonClientAreaStateForTarget {

@@ -230,4 +230,7 @@
 	<data name="NoNonClientAreaStateForTarget" xml:space="preserve">
 		<value>Behavior does not have any associated non-client area state data for the target object.</value>
 	</data>
+	<data name="NoAutocompletionStateForTarget" xml:space="preserve">
+		<value>Behavior does not have any associated autocompletion state data for the target object.</value>
+	</data>
 </root>
