@@ -110,35 +110,23 @@ internal sealed class AutocompletionBehavior : Behavior<TextBox, IAutocompletion
     }
 
     private void HandleTargetPreviewKeyDown(object sender, KeyEventArgs e)
-    {
+    {   // PreviewKeyDown is handled since KeyDown is not raised for navigational keys.
         TextBox textBox = (TextBox) sender;
         IAutocompletionSource source = GetAssociatedValue(textBox);
         AutocompletionState state = GetState(textBox);
 
         switch (e.Key)
-        {   // We handle PreviewKeyDown since KeyDown is not raised for navigational keys.
+        {   
             case Key.Right:
-                // Pressing the Right key will accept any previously suggested text, inserting a new suggestion (if one exists) to the end of the current text.
+                // Pressing the Right key will accept any previously suggested text. New suggestions are armed, but not inserted,
+                // mimicking standard terminal behavior.
                 state.LoadSuggestions(source.SuggestCompletions(textBox.Text));
-                string? suggestion = state.NextSuggestion();
-            
-                // If there are no valid suggestions, we let the normal event handling occur, which will advance the caret to the end.
-                if (string.IsNullOrEmpty(suggestion))
-                    return;
-                                
                 state.SelectionStart = textBox.Text.Length;
-
-                InsertSuggestion(textBox, suggestion);
-                
-                // We prevent the event from being handled further, otherwise any suggested text we just selected will become deselected.
-                e.Handled = true;
                 break;
 
             case Key.Tab:
-                // Pressing tab cycles through the current set of suggestions. The selection start is not changed so we can discern between original and
-                // suggested text.
+                // Pressing tab cycles through the current set of suggestions while preserving the selection start.
                 InsertSuggestion(textBox, state.NextSuggestion());
-
                 break;
         }
     }
