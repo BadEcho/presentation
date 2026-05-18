@@ -133,8 +133,9 @@ public sealed class DialogHost
 
         _owner.Effect = null;
         _owner.IsHitTestVisible = true;
-
+        
         Closed?.Invoke(this, EventArgs.Empty);
+        _owner.Activate();
     }
 
     private void HandleOwnerSizeChanged(object sender, SizeChangedEventArgs e)
