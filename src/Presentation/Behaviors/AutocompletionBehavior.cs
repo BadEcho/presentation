@@ -102,8 +102,8 @@ internal sealed class AutocompletionBehavior : Behavior<TextBox, IAutocompletion
         // When text changes, the start of any selected text changes with it, so that selections begin at the end of the original input.
         state.SelectionStart = textBox.Text.Length;
 
-        // Only insert completion suggestions when text is being added to the text box...otherwise it might be impossible to delete text.
-        if (!e.Changes.Any(c => c.AddedLength > 0))
+        // At the same time, we only want to insert a suggestion if a single character was added; we don't want to if, for example, text was pasted in.
+        if (e.Changes.All(c => c.AddedLength != 1))
             return;
 
         InsertSuggestion(textBox, state.NextSuggestion());
