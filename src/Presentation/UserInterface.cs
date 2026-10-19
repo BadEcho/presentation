@@ -1,7 +1,7 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright>
 //      Created by Matt Weber <matt@badecho.com>
-//      Copyright @ 2025 Bad Echo LLC. All rights reserved.
+//      Copyright @ 2026 Bad Echo LLC. All rights reserved.
 //
 //      Bad Echo Technologies are licensed under the
 //      GNU Affero General Public License v3.0.
@@ -12,7 +12,7 @@
 // -----------------------------------------------------------------------
 
 using System.Windows;
-using ThreadExceptionEventArgs = BadEcho.Threading.ThreadExceptionEventArgs;
+using BadEcho.Threading;
 
 namespace BadEcho.Presentation;
 
@@ -31,17 +31,15 @@ public static class UserInterface
     /// <summary>
     /// Occurs when an unhandled exception is thrown by the Bad Echo Presentation framework application.
     /// </summary>
-    public static event EventHandler<ThreadExceptionEventArgs>? UnhandledException
+    public static event EventHandler<ExecutorExceptionEventArgs>? UnhandledException
     {
         add
         {
-            if (_Application != null)
-                _Application.UnhandledException += value;
+            _Application?.UnhandledException += value;
         }
         remove
         {
-            if (_Application != null)
-                _Application.UnhandledException -= value;
+            _Application?.UnhandledException -= value;
         }
     }
 

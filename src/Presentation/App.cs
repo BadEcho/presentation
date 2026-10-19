@@ -1,7 +1,7 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright>
 //      Created by Matt Weber <matt@badecho.com>
-//      Copyright @ 2025 Bad Echo LLC. All rights reserved.
+//      Copyright @ 2026 Bad Echo LLC. All rights reserved.
 //
 //      Bad Echo Technologies are licensed under the
 //      GNU Affero General Public License v3.0.
@@ -24,7 +24,7 @@ using BadEcho.Interop;
 using BadEcho.Logging;
 using BadEcho.Presentation.Extensions;
 using BadEcho.Presentation.Properties;
-using ThreadExceptionEventArgs = BadEcho.Threading.ThreadExceptionEventArgs;
+using BadEcho.Threading;
 
 namespace BadEcho.Presentation;
 
@@ -50,7 +50,7 @@ internal sealed class App
     /// <summary>
     /// Occurs when an exception is thrown by the Bad Echo Presentation framework application and not handled.
     /// </summary>
-    public event EventHandler<ThreadExceptionEventArgs>? UnhandledException;
+    public event EventHandler<ExecutorExceptionEventArgs>? UnhandledException;
 
     public App(Application application)
     {
@@ -287,10 +287,10 @@ internal sealed class App
 
     private void HandleDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
-        var threadEventArgs = new ThreadExceptionEventArgs(e.Exception);
+        var threadEventArgs = new ExecutorExceptionEventArgs(e.Exception);
         bool isProcessed = false;
 
-        EventHandler<ThreadExceptionEventArgs>? unhandledException = UnhandledException;
+        EventHandler<ExecutorExceptionEventArgs>? unhandledException = UnhandledException;
 
         if (unhandledException != null)
         {

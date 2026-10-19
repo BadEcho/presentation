@@ -1,7 +1,7 @@
 ﻿// -----------------------------------------------------------------------
 // <copyright>
 //      Created by Matt Weber <matt@badecho.com>
-//      Copyright @ 2025 Bad Echo LLC. All rights reserved.
+//      Copyright @ 2026 Bad Echo LLC. All rights reserved.
 //
 //      Bad Echo Technologies are licensed under the
 //      GNU Affero General Public License v3.0.
@@ -60,7 +60,7 @@ public sealed class PresortedInsertionStrategy<TChildViewModel, TKey> : ICollect
         Require.NotNull(collectionViewModel, nameof(collectionViewModel));
 
         var allChildren
-            = collectionViewModel.Items.Concat(viewModel.AsEnumerable());
+            = collectionViewModel.Items.Concat([viewModel]);
 
         List<TChildViewModel> sortedChildren = Sort(allChildren).ToList();
         int index = sortedChildren.IndexOf(viewModel);

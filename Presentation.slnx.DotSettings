@@ -28,7 +28,7 @@
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=StaticMemberInGenericType/@EntryIndexedValue">DO_NOT_SHOW</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=SuggestBaseTypeForParameter/@EntryIndexedValue"></s:String>
 	<s:Boolean x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=SuggestBaseTypeForParameter/@EntryIndexRemoved">True</s:Boolean>
-	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=SuggestBaseTypeForParameterInConstructor/@EntryIndexedValue">WARNING</s:String>
+	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=SuggestBaseTypeForParameterInConstructor/@EntryIndexedValue">HINT</s:String>
 	
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=SuggestVarOrType_005FBuiltInTypes/@EntryIndexedValue">DO_NOT_SHOW</s:String>
 	<s:String x:Key="/Default/CodeInspection/Highlighting/InspectionSeverities/=SuggestVarOrType_005FElsewhere/@EntryIndexedValue">DO_NOT_SHOW</s:String>
@@ -98,6 +98,7 @@
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=RECT/@EntryIndexedValue">RECT</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=TASKDIALOGCONFIG/@EntryIndexedValue">TASKDIALOGCONFIG</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=UI/@EntryIndexedValue">UI</s:String>
+	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=WM/@EntryIndexedValue">WM</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=WNDCLASSEX/@EntryIndexedValue">WNDCLASSEX</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=KBDLLHOOKSTRUCT/@EntryIndexedValue">KBDLLHOOKSTRUCT</s:String>
 	<s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=WNDPROC/@EntryIndexedValue">WNDPROC</s:String>
@@ -137,6 +138,7 @@
 	<s:Boolean x:Key="/Default/GrammarAndSpelling/GrammarChecking/Exceptions/=The_0020I/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/GrammarAndSpelling/GrammarChecking/Exceptions/=the_0020question_0020whether/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/GrammarAndSpelling/GrammarChecking/Exceptions/=whether_0020or_0020not/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/GrammarAndSpelling/GrammarChecking/Exceptions/=_002C_0020no_0020thanks/@EntryIndexedValue">True</s:Boolean>
 	<s:String x:Key="/Default/GrammarAndSpelling/GrammarChecking/RulesStates/=LanguageTool_002EEN_002EAFTERWARDS_005FUS/@EntryIndexedValue">DisabledByUser</s:String>
 	<s:String x:Key="/Default/GrammarAndSpelling/GrammarChecking/RulesStates/=LanguageTool_002EEN_002EANYWAYS/@EntryIndexedValue">DisabledByUser</s:String>
 	<s:String x:Key="/Default/GrammarAndSpelling/GrammarChecking/RulesStates/=LanguageTool_002EEN_002EREP_005FPASSIVE_005FVOICE/@EntryIndexedValue">DisabledByUser</s:String>
@@ -194,6 +196,7 @@
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=DRAWITEM/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=ELEMENTNOTFOUND/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=Emptiable/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Epox/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=ERASEBKGND/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=ests/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=EXITSIZEMOVE/@EntryIndexedValue">True</s:Boolean>
@@ -224,12 +227,14 @@
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=HKLM/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=LBUTTONDOWN/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=MBUTTONDOWN/@EntryIndexedValue">True</s:Boolean>
-	<s:Boolean x:Key="/Default/UserDictionary/Words/=MBUTTONUP/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=MBUTTONUP/@EntryIndexedValue">True</s:Boolean>	
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=netfx/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=norestart/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=RBUTTONDOWN/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=SETTINGCHANGE/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Shlwapi/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=snuggly/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=southdoor/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=SYSCOLORCHANGE/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=THEMECHANGED/@EntryIndexedValue">True</s:Boolean>
 	<s:Boolean x:Key="/Default/UserDictionary/Words/=WIXUI/@EntryIndexedValue">True</s:Boolean>
